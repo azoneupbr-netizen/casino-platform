@@ -5,7 +5,6 @@ import HeroBanner from './HeroBanner';
 export default function CasinoPage() {
   const [selectedCategory, setSelectedCategory] = useState('Todos');
   const [selectedProvider, setSelectedProvider] = useState('Todos');
-  const [searchTerm, setSearchTerm] = useState('');
 
   const categories = ['Todos', 'Populares', 'Novos', 'Jackpot', 'Megaways', 'Clássicos'];
   
@@ -43,8 +42,7 @@ export default function CasinoPage() {
   const filteredGames = games.filter((game) => {
     const matchesCategory = selectedCategory === 'Todos' || game.category === selectedCategory;
     const matchesProvider = selectedProvider === 'Todos' || game.provider === selectedProvider;
-    const matchesSearch = game.name.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesCategory && matchesProvider && matchesSearch;
+    return matchesCategory && matchesProvider;
   });
 
   return (
@@ -54,24 +52,10 @@ export default function CasinoPage() {
         {/* Banner Rotativo */}
         <HeroBanner />
 
-        {/* Header */}
-        <div className="mb-8">
+        {/* Header - Título e Subtítulo Restaurados */}
+        <div className="mb-6 mt-8">
           <h1 className="text-4xl font-bold text-text-primary mb-2">🎰 Cassino</h1>
           <p className="text-text-secondary">Mais de 2.500 jogos dos melhores provedores do mundo</p>
-        </div>
-
-        {/* Busca */}
-        <div className="mb-6">
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Buscar jogos..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-secondary border border-border-custom rounded-lg px-4 py-3 pl-12 text-text-primary placeholder-text-muted focus:outline-none focus:border-accent-gold transition-colors"
-            />
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted text-xl">🔍</span>
-          </div>
         </div>
 
         {/* Filtros - Categorias */}
@@ -159,7 +143,6 @@ export default function CasinoPage() {
               onClick={() => {
                 setSelectedCategory('Todos');
                 setSelectedProvider('Todos');
-                setSearchTerm('');
               }}
               className="mt-4 text-accent-gold hover:text-text-primary font-bold transition-colors"
             >

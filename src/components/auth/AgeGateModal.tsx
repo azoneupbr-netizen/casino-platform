@@ -10,18 +10,18 @@ export default function AgeGateModal({ onConfirm, onReject }: AgeGateModalProps)
   return (
     <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md">
       <div className="bg-[#FBFBFB] w-full max-w-md rounded-xl overflow-hidden shadow-2xl animate-fade-in relative">
-        {/* Header Laranja (Estilo Betano) */}
-        <div className="bg-[#FF4500] p-6 flex justify-center relative overflow-hidden">
-            {/* Shapes decorativos estilo "rasgado" na parte inferior seriam complexos com CSS puro, simplificando para o visual geral */}
-            <h2 className="text-3xl font-bold italic text-white tracking-tighter">Betano</h2>
+        {/* Header Allyk */}
+        <div className="bg-accent-primary p-6 flex justify-center relative overflow-hidden">
+            {/* Shapes decorativos */}
+            <h2 className="text-3xl font-bold italic text-white tracking-tighter">ALLYK</h2>
             
             {/* Efeito triangular na base */}
             <div className="absolute bottom-0 left-0 w-full h-4 bg-[#FBFBFB]" style={{ clipPath: 'polygon(0 100%, 50% 0, 100% 100%)' }}></div>
         </div>
 
         <div className="p-8 text-center">
-            <h3 className="text-[#FF4500] text-xl font-bold mb-1 uppercase">VOCÊ TEM MAIS DE 18</h3>
-            <h3 className="text-[#FF4500] text-xl font-bold mb-8 uppercase">ANOS?</h3>
+            <h3 className="text-accent-primary text-xl font-bold mb-1 uppercase">VOCÊ TEM MAIS DE 18</h3>
+            <h3 className="text-accent-primary text-xl font-bold mb-8 uppercase">ANOS?</h3>
 
             <div className="flex gap-4">
                 <button 

@@ -7,175 +7,135 @@ interface DepositModalProps {
 }
 
 export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
-  const [activeTab, setActiveTab] = useState<'deposit' | 'withdraw'>('deposit');
   const [amount, setAmount] = useState<number>(50);
-  const [pixKey, setPixKey] = useState('');
-  const [step, setStep] = useState<'amount' | 'qrcode'>('amount');
-
+  const [paymentMethod, setPaymentMethod] = useState<'pay2free' | 'pixpaag'>('pay2free');
+  
   if (!isOpen) return null;
 
-  const quickAmounts = [20, 50, 100];
-
-  const handleDeposit = () => {
-    setStep('qrcode');
-  };
-
-  const handleWithdraw = () => {
-    // Simulação de saque
-    alert(`Saque de R$ ${amount} solicitado para a chave PIX: ${pixKey}`);
-    onClose();
-  };
+  const quickAmounts = [20, 50, 100, 250, 500, 1000];
 
   return (
     <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} />
       
-      <div className="relative bg-[#101D2C] border border-slate-800 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
-        <div className="flex border-b border-slate-800">
-          <button
-            onClick={() => setActiveTab('deposit')}
-            className={`flex-1 py-4 font-bold transition-all ${activeTab === 'deposit' ? 'text-[#F5A623] border-b-2 border-[#F5A623] bg-[#0B1622]/50' : 'text-slate-400 hover:text-white hover:bg-[#0B1622]/30'}`}
-          >
-            DEPOSITAR
-          </button>
-          <button
-            onClick={() => setActiveTab('withdraw')}
-            className={`flex-1 py-4 font-bold transition-all ${activeTab === 'withdraw' ? 'text-[#F5A623] border-b-2 border-[#F5A623] bg-[#0B1622]/50' : 'text-slate-400 hover:text-white hover:bg-[#0B1622]/30'}`}
-          >
-            SACAR
-          </button>
-          <button onClick={onClose} className="absolute right-4 top-4 text-slate-400 hover:text-white transition-colors">
-            ✕
-          </button>
+      <div className="relative bg-[#121212] rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 border border-gray-800">
+        
+        {/* Banner Promocional (Topo) */}
+        <div className="relative w-full h-40 bg-gradient-to-r from-green-900 to-black overflow-hidden flex items-center justify-between p-4 group">
+            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-30"></div>
+            <div className="z-10 w-2/3">
+                <div className="text-[#ccff00] font-black text-4xl italic drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)] leading-tight">
+                    20% DE <br/>CASHBACK
+                </div>
+                <div className="bg-[#ccff00] text-black text-xs font-bold px-2 py-1 rounded inline-block mt-2 transform -skew-x-12">
+                    EM SLOTS E CRASH
+                </div>
+            </div>
+            <div className="z-10 w-1/3 flex flex-col items-center justify-center">
+                 <button className="bg-gradient-to-b from-[#ccff00] to-[#99cc00] text-black text-xs font-bold px-4 py-2 rounded-full shadow-lg hover:scale-105 transition-transform">
+                    SAIBA MAIS
+                 </button>
+            </div>
+            
+            <button 
+                onClick={onClose} 
+                className="absolute top-2 right-2 bg-[#ccff00] text-black w-8 h-8 rounded-full flex items-center justify-center font-bold hover:bg-white transition-colors z-20"
+            >
+                ✕
+            </button>
         </div>
 
         <div className="p-6">
-          {activeTab === 'deposit' ? (
-            step === 'amount' ? (
-            <div className="space-y-6">
-              <div>
-                <label className="block text-slate-400 text-sm mb-3">Escolha um valor rápido</label>
-                <div className="grid grid-cols-3 gap-3">
-                  {quickAmounts.map((val) => (
-                    <button
-                      key={val}
-                      onClick={() => setAmount(val)}
-                      className={`py-3 rounded-lg border font-bold transition-all ${
-                        amount === val
-                          ? 'bg-[#F5A623] text-black border-[#F5A623]'
-                          : 'bg-[#0B1622] text-slate-300 border-slate-700 hover:border-[#F5A623]'
-                      }`}
-                    >
-                      R$ {val}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-slate-400 text-sm mb-3">Ou digite o valor (R$)</label>
-                <input
-                  type="number"
-                  value={amount}
-                  onChange={(e) => setAmount(Number(e.target.value))}
-                  className="w-full bg-[#0B1622] border border-slate-700 rounded-lg px-4 py-4 text-white text-lg font-bold focus:border-[#F5A623] outline-none"
-                />
-              </div>
-
-              <div className="bg-[#0B1622] p-4 rounded-lg flex items-start gap-3">
-                <span className="text-green-500 text-xl">⚡</span>
+            {/* Header com Voltar */}
+            <div className="flex items-center gap-3 mb-6">
+                <button className="text-gray-400 hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                </button>
                 <div>
-                  <p className="text-white font-bold text-sm">Depósito Instantâneo</p>
-                  <p className="text-slate-400 text-xs">Seu saldo será atualizado em segundos após o pagamento.</p>
+                    <h2 className="text-white font-bold text-lg">Depositar</h2>
+                    <p className="text-gray-400 text-xs">Adicione saldo à sua conta</p>
                 </div>
-              </div>
-
-              <button
-                onClick={handleDeposit}
-                className="w-full bg-[#F5A623] hover:bg-[#D4881C] text-black font-bold py-4 rounded-lg transition-all text-lg"
-              >
-                GERAR QR CODE PIX
-              </button>
             </div>
-            ) : (
-            <div className="text-center space-y-6">
-              <div className="bg-white p-4 rounded-xl inline-block">
-                {/* Simulação de QR Code */}
-                <div className="w-48 h-48 bg-black pattern-dots relative">
-                    <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center text-xs font-bold">PIX</div>
+
+            {/* Seleção de Método */}
+            <div className="flex gap-3 mb-6">
+                <button 
+                    onClick={() => setPaymentMethod('pay2free')}
+                    className={`flex-1 py-3 px-2 rounded-lg border flex items-center justify-center gap-2 transition-all ${paymentMethod === 'pay2free' ? 'border-[#ccff00] bg-[#ccff00]/10 text-white' : 'border-gray-700 bg-[#1e1e1e] text-gray-400'}`}
+                >
+                    <span className="font-bold text-sm">Pay2Free</span>
+                </button>
+                <button 
+                    onClick={() => setPaymentMethod('pixpaag')}
+                    className={`flex-1 py-3 px-2 rounded-lg border flex items-center justify-center gap-2 transition-all ${paymentMethod === 'pixpaag' ? 'border-[#ccff00] bg-[#ccff00]/10 text-white' : 'border-gray-700 bg-[#1e1e1e] text-gray-400'}`}
+                >
+                    <span className="font-bold text-sm">PixPaag</span>
+                </button>
+            </div>
+
+            {/* Inputs Readonly */}
+            <div className="grid grid-cols-2 gap-3 mb-6">
+                <div>
+                    <label className="text-gray-500 text-xs font-bold mb-1 block">Método de Pagamento</label>
+                    <div className="bg-[#1e1e1e] border border-gray-700 rounded p-3 text-gray-300 text-sm font-medium">
+                        {paymentMethod === 'pay2free' ? 'PAY2FREE' : 'PIXPAAG'}
                     </div>
                 </div>
-              </div>
-
-              <div>
-                <p className="text-slate-400 text-sm mb-2">Escaneie o QR Code ou copie o código abaixo:</p>
-                <div className="flex gap-2">
-                  <input 
-                    readOnly
-                    value="00020126330014BR.GOV.BCB.PIX011112345678901..."
-                    className="flex-1 bg-[#0B1622] border border-slate-700 rounded-lg px-3 py-2 text-slate-300 text-sm outline-none"
-                  />
-                  <button className="bg-[#1a2942] hover:bg-[#243a5e] text-[#F5A623] font-bold px-4 rounded-lg transition-all">
-                    Copiar
-                  </button>
+                <div>
+                    <label className="text-gray-500 text-xs font-bold mb-1 block">Depósito Mínimo</label>
+                    <div className="bg-[#1e1e1e] border border-gray-700 rounded p-3 text-gray-300 text-sm font-medium">
+                        R$ 5
+                    </div>
                 </div>
-              </div>
-
-              <div className="animate-pulse">
-                <p className="text-[#F5A623] font-bold text-sm">Aguardando pagamento...</p>
-              </div>
-
-              <button
-                onClick={() => setStep('amount')}
-                className="text-slate-500 text-sm hover:text-white underline"
-              >
-                Voltar
-              </button>
             </div>
-            )
-          ) : (
-            <div className="space-y-6">
-              <div className="bg-[#0B1622] p-4 rounded-lg border border-slate-700">
-                <p className="text-slate-400 text-sm">Saldo Disponível</p>
-                <p className="text-[#F5A623] font-bold text-2xl">R$ 1.250,00</p>
-              </div>
 
-              <div>
-                <label className="block text-slate-400 text-sm mb-3">Chave PIX (CPF, Email ou Telefone)</label>
-                <input
-                  type="text"
-                  value={pixKey}
-                  onChange={(e) => setPixKey(e.target.value)}
-                  placeholder="Digite sua chave PIX"
-                  className="w-full bg-[#0B1622] border border-slate-700 rounded-lg px-4 py-4 text-white font-medium focus:border-[#F5A623] outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-slate-400 text-sm mb-3">Valor do Saque (R$)</label>
-                <input
-                  type="number"
-                  value={amount}
-                  onChange={(e) => setAmount(Number(e.target.value))}
-                  className="w-full bg-[#0B1622] border border-slate-700 rounded-lg px-4 py-4 text-white text-lg font-bold focus:border-[#F5A623] outline-none"
-                />
-              </div>
-
-              <div className="text-xs text-slate-500 space-y-1">
-                <p>• Mínimo para saque: R$ 50,00</p>
-                <p>• Processamento em até 1 hora</p>
-              </div>
-
-              <button
-                onClick={handleWithdraw}
-                disabled={!pixKey || amount < 50}
-                className="w-full bg-[#F5A623] hover:bg-[#D4881C] disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold py-4 rounded-lg transition-all text-lg"
-              >
-                SOLICITAR SAQUE
-              </button>
+            {/* Valor do Depósito */}
+            <div className="mb-2">
+                <div className="flex justify-between items-end mb-1">
+                    <label className="text-white font-bold text-sm">Valor a ser depositado:</label>
+                    <button className="text-gray-400 text-xs hover:text-[#ccff00] underline">Possui cupom?</button>
+                </div>
+                <div className="relative">
+                    <input 
+                        type="number" 
+                        value={amount}
+                        onChange={(e) => setAmount(Number(e.target.value))}
+                        className="w-full bg-[#1e1e1e] border border-gray-700 rounded-lg py-3 pl-4 pr-20 text-white font-bold text-lg focus:border-[#ccff00] outline-none transition-colors"
+                    />
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 bg-[#2a2a2a] px-2 py-1 rounded">
+                         <span className="text-xs text-white font-bold">🇧🇷 BRL</span>
+                    </div>
+                </div>
             </div>
-          )}
+
+            {/* Grid de Valores Rápidos */}
+            <div className="grid grid-cols-3 gap-2 mb-8 mt-4">
+                {quickAmounts.map((val) => (
+                    <button
+                        key={val}
+                        onClick={() => setAmount(val)}
+                        className={`relative py-3 rounded border font-bold text-sm transition-all ${
+                            amount === val
+                                ? 'bg-white text-black border-white'
+                                : 'bg-[#1e1e1e] text-white border-gray-700 hover:border-gray-500'
+                        }`}
+                    >
+                        R$ {val}
+                        {[50, 250, 1000].includes(val) && (
+                            <span className="absolute -top-2 -right-1 bg-[#ccff00] text-black text-[10px] px-1 rounded font-bold shadow-sm">
+                                HOT
+                            </span>
+                        )}
+                    </button>
+                ))}
+            </div>
+
+            {/* Botão de Ação */}
+            <button className="w-full bg-gradient-to-b from-[#ccff00] to-[#99cc00] hover:from-[#b3e600] hover:to-[#88b300] text-black font-black py-4 rounded-lg text-lg shadow-[0_0_20px_rgba(204,255,0,0.3)] hover:shadow-[0_0_30px_rgba(204,255,0,0.5)] transition-all transform hover:scale-[1.02]">
+                DEPOSITAR
+            </button>
         </div>
       </div>
     </div>

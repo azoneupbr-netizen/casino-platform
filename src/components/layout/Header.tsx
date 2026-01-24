@@ -5,15 +5,53 @@ import DepositModal from '../payment/DepositModal';
 import ThemeToggle from '../ui/ThemeToggle';
 import PromotionsSidebar from './PromotionsSidebar';
 import AgeGateModal from '../auth/AgeGateModal';
+import UserDropdown from './UserDropdown';
+import SupportModal from './SupportModal';
 
 export default function Header() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
   const [isGuestProfileOpen, setIsGuestProfileOpen] = useState(false);
   const [isPromotionsOpen, setIsPromotionsOpen] = useState(false);
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
   const [isAgeGateOpen, setIsAgeGateOpen] = useState(false);
+  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [modalTab, setModalTab] = useState<'login' | 'signup'>('login');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // Typewriter Effect State
+  const [placeholder, setPlaceholder] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [loopNum, setLoopNum] = useState(0);
+  const [typingSpeed, setTypingSpeed] = useState(150);
+  const [searchCategory, setSearchCategory] = useState('Cassino');
+  const [cpfValue, setCpfValue] = useState('');
+
+  const gameNames = ["Sweet Bonanza", "Aviator", "Fortune Tiger", "Roleta", "Blackjack"];
+
+  React.useEffect(() => {
+    const handleTyping = () => {
+      const i = loopNum % gameNames.length;
+      const fullText = gameNames[i];
+
+      setPlaceholder(isDeleting 
+        ? fullText.substring(0, placeholder.length - 1) 
+        : fullText.substring(0, placeholder.length + 1)
+      );
+
+      setTypingSpeed(isDeleting ? 50 : 150);
+
+      if (!isDeleting && placeholder === fullText) {
+        setTimeout(() => setIsDeleting(true), 2000); // Pause at end
+      } else if (isDeleting && placeholder === '') {
+        setIsDeleting(false);
+        setLoopNum(loopNum + 1);
+      }
+    };
+
+    const timer = setTimeout(handleTyping, isDeleting ? 50 : 150);
+    return () => clearTimeout(timer);
+  }, [placeholder, isDeleting, loopNum]);
 
   const openModal = (tab: 'login' | 'signup') => {
     setModalTab(tab);
@@ -34,13 +72,29 @@ export default function Header() {
     setIsModalOpen(false);
   };
 
+  const handleSignup = () => {
+    setIsLoggedIn(true);
+    setIsModalOpen(false);
+    // Abrir modal de depósito após cadastro (Primeiro Depósito)
+    setTimeout(() => setIsDepositModalOpen(true), 500);
+  };
+
+  const handleGoogleLogin = () => {
+    // Simulação de login com Google
+    setIsLoggedIn(true);
+    setIsModalOpen(false);
+    if (modalTab === 'signup') {
+        setTimeout(() => setIsDepositModalOpen(true), 500);
+    }
+  };
+
   return (
     <>
       <header className="sticky top-0 left-0 right-0 bg-primary border-b border-border-custom z-50 h-20 transition-colors duration-300">
         <div className="flex items-center justify-between h-full px-6">
-          <div className="flex items-center gap-2 w-64"> {/* Largura fixa para alinhar com sidebar expandida se necessário */}
-            <span className="text-2xl font-bold text-accent-primary">ALLYK</span>
-            <span className="text-text-primary">CASINO</span>
+          <div className="flex items-center gap-2 w-auto md:w-64"> {/* Largura ajustada */}
+            <span className="text-xl md:text-2xl font-bold text-accent-primary">ALLYK</span>
+            <span className="text-sm md:text-base text-text-primary">CASINO</span>
           </div>
 
           <nav className="hidden md:flex items-center gap-8">
@@ -60,42 +114,109 @@ export default function Header() {
             >
               <span className="text-2xl group-hover:scale-110 transition-transform animate-bounce">🎁</span>
             </button>
+            <button 
+                onClick={() => setIsSupportOpen(true)}
+                className="text-text-secondary hover:text-accent-primary transition-colors font-medium flex items-center gap-2 group" 
+                title="Suporte"
+            >
+              <svg width="28" height="28" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="group-hover:scale-110 transition-transform animate-[bounce_2s_infinite]">
+                <defs>
+                  <linearGradient id="chatGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#22c55e" /> {/* green-500 */}
+                    <stop offset="100%" stopColor="#15803d" /> {/* green-700 */}
+                  </linearGradient>
+                </defs>
+                <path d="M20 36C28.8366 36 36 28.8366 36 20C36 11.1634 28.8366 4 20 4C11.1634 4 4 11.1634 4 20C4 23.6733 5.23769 27.0588 7.33206 29.7423C7.54573 30.016 7.62588 30.3662 7.55167 30.702L6.5 35.5L11.298 34.4483C11.6338 34.3741 11.984 34.4543 12.2577 34.6679C14.9412 36.7623 18.3267 38 22 38L20 36Z" fill="url(#chatGradient)" stroke="white" strokeWidth="2" strokeLinejoin="round"/>
+                <path d="M12 20H28" stroke="white" strokeWidth="3" strokeLinecap="round" opacity="0.9"/>
+                <path d="M12 14H28" stroke="white" strokeWidth="3" strokeLinecap="round" opacity="0.9"/>
+                <path d="M12 26H20" stroke="white" strokeWidth="3" strokeLinecap="round" opacity="0.9"/>
+              </svg>
+            </button>
           </nav>
+
+          {/* Search Bar with Typewriter & Dropdown */}
+          <div className="hidden xl:flex items-center flex-1 max-w-lg mx-6">
+            <div className="relative w-full group">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-text-secondary group-focus-within:text-accent-primary transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+                <input
+                    type="text"
+                    className="block w-full pl-10 pr-32 py-2.5 bg-tertiary/50 border border-border-custom rounded-lg text-sm text-text-primary placeholder-text-muted focus:border-accent-primary outline-none transition-all shadow-inner focus:bg-tertiary"
+                    placeholder={placeholder}
+                />
+                <div className="absolute inset-y-0 right-0 flex items-center border-l border-border-custom my-1">
+                    <select 
+                        value={searchCategory}
+                        onChange={(e) => setSearchCategory(e.target.value)}
+                        className="h-full pl-3 pr-8 bg-transparent text-text-secondary text-xs font-medium focus:ring-0 cursor-pointer hover:text-text-primary outline-none appearance-none"
+                        style={{ backgroundImage: 'none' }}
+                    >
+                        <option value="Cassino">🎰 Cassino</option>
+                        <option value="Esportes">⚽ Esportes</option>
+                    </select>
+                    <div className="absolute right-2 pointer-events-none text-text-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+          </div>
 
           <div className="flex items-center gap-4">
             <ThemeToggle />
             {isLoggedIn ? (
               <>
-                <div className="flex flex-col items-end mr-2">
-                    <span className="text-xs text-text-muted">Saldo</span>
-                    <span className="text-accent-gold font-bold">R$ 1.250,00</span>
-                </div>
-                {/* Notificações */}
-                <button className="relative p-2 text-text-secondary hover:text-text-primary transition-colors">
-                  <span className="text-xl">🔔</span>
-                  <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-                </button>
                 <button 
                   onClick={() => setIsDepositModalOpen(true)}
-                  className="px-6 py-2 bg-[#28a745] hover:bg-[#218838] text-white rounded-lg transition-all font-bold shadow-lg shadow-green-900/20"
+                  className="px-6 py-2 bg-[#ccff00] hover:bg-[#b3e600] text-black rounded-full transition-all font-bold shadow-[0_0_15px_rgba(204,255,0,0.3)] hover:shadow-[0_0_25px_rgba(204,255,0,0.5)] transform hover:scale-105"
                 >
                   DEPOSITAR
                 </button>
-                <div className="w-10 h-10 bg-tertiary rounded-full flex items-center justify-center text-accent-gold font-bold border border-slate-600 cursor-pointer hover:border-accent-gold transition-colors">
-                    A
+
+                <div className="flex items-center gap-2 bg-[#1e2330] rounded-full pl-4 pr-1 py-1 border border-gray-700/50">
+                    <button className="text-gray-400 hover:text-white transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path><path d="M16 21h5v-5"></path></svg>
+                    </button>
+                    <span className="text-white font-bold text-sm mx-2">R$ 0,00</span>
+                    <div className="w-8 h-8 rounded-full bg-[#2a2e3e] flex items-center justify-center border border-gray-600">
+                         <img src="https://api.dicebear.com/9.x/avataaars/svg?seed=Felix" alt="Avatar" className="w-full h-full object-cover rounded-full" />
+                    </div>
+                </div>
+
+                <div className="relative">
+                    <button 
+                        onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
+                        className="w-10 h-10 rounded-full bg-yellow-400 border-2 border-[#1e2330] overflow-hidden hover:scale-105 transition-transform ring-2 ring-transparent hover:ring-yellow-400 cursor-pointer"
+                    >
+                        <img src="https://api.dicebear.com/9.x/avataaars/svg?seed=Felix" alt="Avatar" className="w-full h-full object-cover" />
+                    </button>
+                    
+                    <UserDropdown 
+                        isOpen={isUserDropdownOpen} 
+                        onClose={() => setIsUserDropdownOpen(false)}
+                        onLogout={() => {
+                            setIsLoggedIn(false);
+                            setIsUserDropdownOpen(false);
+                        }}
+                        onSupportClick={() => setIsSupportOpen(true)}
+                    />
                 </div>
               </>
             ) : (
               <>
                 <button 
                   onClick={() => openModal('login')}
-                  className="px-6 py-2 text-accent-primary border border-accent-primary rounded-lg hover:bg-accent-primary hover:text-white transition-all font-bold"
+                  className="px-3 py-1.5 md:px-6 md:py-2 text-xs md:text-base text-accent-primary border border-accent-primary rounded-lg hover:bg-accent-primary hover:text-white transition-all font-bold"
                 >
                   Entrar
                 </button>
                 <button 
                   onClick={handleSignupClick}
-                  className="px-6 py-2 bg-accent-primary text-white rounded-lg hover:bg-opacity-90 transition-all font-bold"
+                  className="px-3 py-1.5 md:px-6 md:py-2 text-xs md:text-base bg-accent-primary text-white rounded-lg hover:bg-opacity-90 transition-all font-bold"
                 >
                   Cadastro
                 </button>
@@ -103,7 +224,7 @@ export default function Header() {
                 {/* Ícone de Perfil para Visitantes */}
                 <button 
                   onClick={() => setIsGuestProfileOpen(true)}
-                  className="w-10 h-10 rounded-full bg-tertiary hover:bg-accent-primary/20 flex items-center justify-center text-text-secondary hover:text-accent-primary transition-all border border-border-custom ml-2 group relative"
+                  className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-tertiary hover:bg-accent-primary/20 flex items-center justify-center text-text-secondary hover:text-accent-primary transition-all border border-border-custom ml-2 group relative"
                   title="Minha Conta"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
@@ -126,6 +247,11 @@ export default function Header() {
         isOpen={isPromotionsOpen} 
         onClose={() => setIsPromotionsOpen(false)} 
         onLogin={() => openModal('login')}
+      />
+
+      <SupportModal 
+        isOpen={isSupportOpen} 
+        onClose={() => setIsSupportOpen(false)} 
       />
 
       {isAgeGateOpen && (
@@ -179,48 +305,120 @@ export default function Header() {
       {/* Modal de Login/Cadastro */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[999] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setIsModalOpen(false)} />
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setIsModalOpen(false)} />
           
-          <div className="relative bg-secondary border border-border-custom rounded-2xl w-full max-w-md shadow-2xl overflow-hidden">
-            <div className="flex border-b border-border-custom">
-              <button 
-                onClick={() => setModalTab('login')}
-                className={`flex-1 py-4 font-bold transition-all ${modalTab === 'login' ? 'text-accent-primary border-b-2 border-accent-primary' : 'text-text-muted'}`}
-              >
-                ENTRAR
-              </button>
-              <button 
-                onClick={() => setModalTab('signup')}
-                className={`flex-1 py-4 font-bold transition-all ${modalTab === 'signup' ? 'text-accent-primary border-b-2 border-accent-primary' : 'text-text-muted'}`}
-              >
-                CADASTRO
-              </button>
+          <div className="relative bg-[#1a1c24] border border-[#2a2e3e] rounded-xl w-full max-w-md shadow-2xl overflow-hidden animate-fade-in">
+            {/* Top Bar */}
+            <div className="flex justify-between items-center p-4 bg-[#15171e] border-b border-[#2a2e3e]">
+                {/* Help Button */}
+                <button 
+                    onClick={() => { setIsModalOpen(false); setIsSupportOpen(true); }}
+                    className="flex items-center gap-2 bg-[#ff4d00] hover:bg-[#ff6600] text-white px-3 py-1.5 rounded-full text-xs font-bold transition-colors shadow-lg group"
+                >
+                    <span className="text-lg group-hover:scale-110 transition-transform">💬</span>
+                    <div className="flex flex-col items-start leading-none">
+                        <span className="text-[10px] opacity-80">Precisa de</span>
+                        <span>Ajuda?</span>
+                    </div>
+                </button>
+
+                {/* Switch Mode & Close */}
+                <div className="flex items-center gap-4">
+                    <div className="text-right hidden sm:block">
+                        <p className="text-[10px] text-gray-400">
+                            {modalTab === 'signup' ? 'Já tem uma conta?' : 'Não tem conta?'}
+                        </p>
+                        <button 
+                            onClick={() => setModalTab(modalTab === 'signup' ? 'login' : 'signup')}
+                            className="text-xs font-bold text-[#ff4d00] hover:underline"
+                        >
+                            {modalTab === 'signup' ? 'Faça login aqui' : 'Registre-se aqui'}
+                        </button>
+                    </div>
+                    <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-white transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
             </div>
 
-            <div className="p-8">
-              <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
-                {modalTab === 'signup' && (
-                  <input 
-                    type="text" 
-                    placeholder="Nome Completo" 
-                    className="w-full bg-primary border border-border-custom rounded-lg px-4 py-3 text-text-primary focus:border-accent-primary outline-none" 
-                  />
-                )}
-                <input 
-                  type="text" 
-                  placeholder="Email ou CPF" 
-                  className="w-full bg-primary border border-border-custom rounded-lg px-4 py-3 text-text-primary focus:border-accent-primary outline-none" 
-                />
-                <input 
-                  type="password" 
-                  placeholder="Senha" 
-                  className="w-full bg-primary border border-border-custom rounded-lg px-4 py-3 text-text-primary focus:border-accent-primary outline-none" 
-                />
-                
-                <button className="w-full bg-accent-primary hover:bg-opacity-90 text-white font-bold py-4 rounded-lg transition-all mt-4">
-                  {modalTab === 'login' ? 'ENTRAR NA CONTA' : 'CRIAR MINHA CONTA'}
+            {/* Content */}
+            <div className="p-6 space-y-6">
+                {/* Google Button */}
+                <button 
+                    onClick={handleGoogleLogin}
+                    className="w-full bg-[#2a2e3e] hover:bg-[#353a4d] text-white font-medium py-3 rounded-lg flex items-center justify-center gap-3 transition-all group border border-gray-700 hover:border-gray-500 shadow-lg"
+                >
+                    <svg className="w-5 h-5" viewBox="0 0 24 24">
+                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                    </svg>
+                    {modalTab === 'signup' ? 'Registrar com Google' : 'Entrar com Google'}
                 </button>
-              </form>
+
+                <div className="relative flex py-1 items-center">
+                    <div className="flex-grow border-t border-gray-700"></div>
+                    <span className="flex-shrink-0 mx-4 text-gray-500 text-sm">ou</span>
+                    <div className="flex-grow border-t border-gray-700"></div>
+                </div>
+
+                {/* Form (CPF Input) */}
+                <form 
+                    className="space-y-4" 
+                    onSubmit={(e) => { 
+                        e.preventDefault(); 
+                        if (modalTab === 'signup') {
+                            handleSignup();
+                        } else {
+                            handleLogin(); 
+                        }
+                    }}
+                >
+                     <div className="space-y-2">
+                        <div className="relative group">
+                            <input 
+                                type="text" 
+                                placeholder="CPF *" 
+                                className="w-full bg-[#15171e] border border-gray-700 rounded-lg pl-4 pr-24 py-3 text-white placeholder-gray-500 focus:border-[#ccff00] focus:ring-1 focus:ring-[#ccff00] outline-none transition-all"
+                                value={cpfValue}
+                                onChange={(e) => setCpfValue(e.target.value)}
+                            />
+                            <button 
+                                type="button"
+                                className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#2a2e3e] hover:bg-[#353a4d] text-gray-300 text-xs px-3 py-1.5 rounded transition-colors border border-gray-600 hover:text-white hover:border-gray-500"
+                            >
+                                Validar
+                            </button>
+                        </div>
+                        
+                        {modalTab === 'signup' && (
+                            <p className="text-green-600 text-xs font-medium animate-pulse flex items-center gap-1">
+                                <span className="w-1.5 h-1.5 bg-green-500 rounded-full inline-block"></span>
+                                Por favor, digite e valide seu CPF para continuar...
+                            </p>
+                        )}
+                     </div>
+                     
+                     {modalTab === 'login' && (
+                         <div className="animate-fade-in">
+                             <input 
+                                type="password"
+                                placeholder="Senha"
+                                className="w-full bg-[#15171e] border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:border-[#ccff00] focus:ring-1 focus:ring-[#ccff00] outline-none transition-all"
+                             />
+                             <div className="text-right mt-1">
+                                <a href="#" className="text-xs text-gray-400 hover:text-[#ccff00]">Esqueceu a senha?</a>
+                             </div>
+                         </div>
+                     )}
+
+                     <button className="w-full bg-[#ccff00] hover:bg-[#b3e600] text-black font-bold py-3 rounded-lg transition-all shadow-[0_0_15px_rgba(204,255,0,0.2)] hover:shadow-[0_0_25px_rgba(204,255,0,0.4)] mt-2">
+                        {modalTab === 'signup' ? 'CONTINUAR' : 'ENTRAR'}
+                     </button>
+                </form>
             </div>
           </div>
         </div>

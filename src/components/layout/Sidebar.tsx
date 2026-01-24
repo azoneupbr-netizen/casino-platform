@@ -1,5 +1,6 @@
 'use client';
 import React, { useState } from 'react';
+import Link from 'next/link';
 import AnimatedBanner from './AnimatedBanner';
 
 export default function Sidebar() {
@@ -46,9 +47,9 @@ export default function Sidebar() {
           </h3>
         )}
         {sportsMenu.map((item, index) => (
-          <a
+          <Link
             key={index}
-            href="#"
+            href="/sports"
             className="flex items-center gap-3 px-4 py-3 hover:bg-tertiary hover:border-l-4 hover:border-accent-primary transition-all group"
             title={!isExpanded ? item.name : ''}
           >
@@ -65,7 +66,7 @@ export default function Sidebar() {
                 </span>
               </>
             )}
-          </a>
+          </Link>
         ))}
       </div>
 
@@ -80,9 +81,9 @@ export default function Sidebar() {
           </h3>
         )}
         {casinoMenu.map((item, index) => (
-          <a
+          <Link
             key={index}
-            href="#"
+            href="/casino"
             className="flex items-center gap-3 px-4 py-3 hover:bg-tertiary hover:border-l-4 hover:border-accent-primary transition-all group"
             title={!isExpanded ? item.name : ''}
           >
@@ -99,7 +100,7 @@ export default function Sidebar() {
                 </span>
               </>
             )}
-          </a>
+          </Link>
         ))}
       </div>
     </aside>

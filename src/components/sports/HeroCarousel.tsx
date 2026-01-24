@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import LargePromoBanner from './LargePromoBanner';
 
 const carouselItems = [
   {
@@ -51,7 +52,7 @@ const carouselItems = [
 ];
 
 const featureItems = [
-  { id: 1, title: 'Betano no BBB', subtitle: 'Patrocinadora da casa mais vigiada', icon: '👁️', color: 'bg-black' },
+  { id: 1, title: 'Allyk oportunidades', subtitle: 'Patrocinadora da casa mais vigiada', icon: '👁️', color: 'bg-black' },
   { id: 2, title: 'ATÉ R$20 MIL', subtitle: 'Cashback em dinheiro!', icon: '💰', color: 'bg-orange-600' },
   { id: 3, title: 'Mamão com Açúcar', subtitle: 'A melhor odd do mercado', icon: '🍈', color: 'bg-orange-500' },
   { id: 4, title: 'Mamão com Pimenta', subtitle: 'A melhor odd picante', icon: '🌶️', color: 'bg-red-600' },
@@ -82,6 +83,9 @@ export default function HeroCarousel() {
           </button>
         ))}
       </div>
+
+      {/* Large Promo Banner */}
+      <LargePromoBanner />
 
       {/* Main Carousel */}
       <div className="flex overflow-x-auto gap-4 pb-4 scrollbar-hide snap-x">

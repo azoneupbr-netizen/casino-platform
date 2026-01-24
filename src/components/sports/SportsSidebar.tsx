@@ -211,9 +211,9 @@ export default function SportsSidebar({ selectedSport, onSelectSport }: SportsSi
         ))}
       </div>
 
-      {/* Banner Promocional (Estilo Betano) */}
+      {/* Banner Promocional */}
       <div className="mx-3 mt-6 mb-2">
-        <div className="bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 rounded-lg p-4 text-white shadow-lg relative overflow-hidden group cursor-pointer hover:shadow-orange-500/20 transition-all hover:scale-[1.02]">
+        <div className="bg-gradient-to-br from-accent-primary via-accent-secondary to-purple-900 rounded-lg p-4 text-white shadow-lg relative overflow-hidden group cursor-pointer hover:shadow-accent-primary/20 transition-all hover:scale-[1.02]">
           {/* Efeito de brilho */}
           <div className="absolute top-0 right-0 w-20 h-20 bg-white/20 blur-2xl rounded-full -mr-10 -mt-10 pointer-events-none"></div>
           

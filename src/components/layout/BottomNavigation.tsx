@@ -15,19 +15,19 @@ export default function BottomNavigation() {
   ];
 
   return (
-    <div className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-[#0B1622] border-t border-slate-800 flex items-center justify-around z-[980] px-2">
+    <div className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-[#1a1c24] border-t border-[#2a2e3e] flex items-center justify-around z-[980] px-2 shadow-lg">
       {navItems.map((item) => {
         const isActive = pathname === item.href;
         return (
           <Link
             key={item.name}
             href={item.href}
-            className={`flex flex-col items-center justify-center w-full h-full transition-colors ${
-              isActive ? 'text-[#F5A623]' : 'text-slate-400 hover:text-slate-200'
+            className={`flex flex-col items-center justify-center w-full h-full transition-all ${
+              isActive ? 'text-[#ff4d00]' : 'text-gray-400 hover:text-white'
             }`}
           >
-            <span className="text-xl mb-1">{item.icon}</span>
-            <span className="text-[10px] font-medium">{item.name}</span>
+            <span className={`text-xl mb-1 ${isActive ? 'animate-bounce' : ''}`}>{item.icon}</span>
+            <span className="text-[10px] font-bold">{item.name}</span>
           </Link>
         );
       })}

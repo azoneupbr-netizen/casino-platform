@@ -43,18 +43,24 @@ export interface Bet {
   selection: string; // Ex: "Real Madrid"
 }
 
-interface BetSlipProps {
+export interface BetSlipProps {
   bets: Bet[];
   onRemoveBet: (id: string) => void;
   onClearBets: () => void;
   className?: string;
   onHeaderClick?: () => void;
+  isOpen?: boolean;
+  expandOnHover?: boolean;
 }
 
-export default function BetSlip({ bets, onRemoveBet, onClearBets, className = '', onHeaderClick }: BetSlipProps) {
+export default function BetSlip({ bets, onRemoveBet, onClearBets, className = '', onHeaderClick, isOpen = true, expandOnHover = false }: BetSlipProps) {
   const [activeTab, setActiveTab] = useState<'simples' | 'multipla' | 'sistema'>('simples');
   const [stake, setStake] = useState<number>(10);
   const [oddChanged, setOddChanged] = useState<string | null>(null);
+  const [showSettings, setShowSettings] = useState(false);
+  const [oddsOption, setOddsOption] = useState<'any' | 'higher' | 'none'>('higher');
+  const [quickBet, setQuickBet] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   // Simulação de mudança de odd para efeito visual
   useEffect(() => {
@@ -75,36 +81,44 @@ export default function BetSlip({ bets, onRemoveBet, onClearBets, className = ''
   }, [bets.length]);
 
   return (
-    <div className={`bg-secondary border border-border-custom rounded-xl overflow-hidden flex flex-col shadow-2xl transition-colors duration-300 ${className}`}>
+    <div 
+        className={`bg-secondary border border-border-custom rounded-xl flex flex-col shadow-2xl transition-colors duration-300 ${className}`}
+        onMouseEnter={() => expandOnHover && setIsHovered(true)}
+        onMouseLeave={() => expandOnHover && setIsHovered(false)}
+    >
       {/* Cabeçalho Vermelho Estilo Print */}
       <div 
         onClick={onHeaderClick}
-        className={`bg-gradient-to-r from-orange-600 to-red-600 p-4 flex items-center justify-between text-white relative shadow-md z-10 ${onHeaderClick ? 'cursor-pointer' : ''}`}
+        className={`bg-[#E91E63] h-14 px-4 rounded-t-xl flex items-center justify-between text-white relative shadow-md z-20 ${onHeaderClick ? 'cursor-pointer' : ''}`}
       >
-        <div className="flex items-center gap-2">
-            <div className="bg-white/20 p-1.5 rounded-md">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-            </div>
-            <span className="font-bold text-sm tracking-wider">BOLETIM DE APOSTAS</span>
-            <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 opacity-70 transition-transform duration-300 ${!isOpen ? 'rotate-180' : ''}`} viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-            </svg>
+        <div 
+            className="flex items-center gap-2 cursor-pointer hover:bg-black/10 p-1 rounded transition-colors relative"
+        >
+            <span className="font-bold text-base">Cupom</span>
         </div>
 
-        <div className="flex items-center gap-2">
-            <div className="text-[10px] font-bold uppercase leading-tight text-right">
+        <div className="flex items-center gap-3" onClick={(e) => e.stopPropagation()}>
+            <div className="text-[10px] font-bold uppercase leading-tight text-right text-white">
                 Aposta<br/>Rápida
             </div>
-            {/* Toggle Switch Simulado */}
-            <div className="w-10 h-5 bg-white/30 rounded-full relative cursor-pointer border border-white/40">
-                <div className="absolute right-0.5 top-0.5 w-4 h-4 bg-white rounded-full flex items-center justify-center text-[#E91E63] text-[10px] font-bold">
+            {/* Toggle Switch */}
+            <div 
+                className={`w-12 h-6 rounded-full relative cursor-pointer border transition-colors ${quickBet ? 'bg-[#E91E63] border-[#E91E63]' : 'bg-transparent border-white/40'}`}
+                onClick={() => setQuickBet(!quickBet)}
+            >
+                <div className={`absolute top-0.5 w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold transition-all duration-300 ${quickBet ? 'right-1 bg-white text-[#E91E63]' : 'right-[26px] bg-white text-slate-400'}`}>
                     ⚡
                 </div>
             </div>
         </div>
       </div>
+
+      {/* Conteúdo Expansível (Hover) */}
+      <div className={`${
+        expandOnHover 
+            ? `transition-all duration-500 ease-in-out overflow-hidden flex flex-col ${!isHovered ? 'max-h-0 opacity-0' : 'max-h-[1000px] opacity-100'}`
+            : 'flex-1 flex flex-col overflow-hidden'
+      }`}>
 
       {/* Abas */}
       <div className="bg-tertiary p-1 border-b border-border-custom">
@@ -190,7 +204,7 @@ export default function BetSlip({ bets, onRemoveBet, onClearBets, className = ''
 
       {/* Footer do Cupom - Valores e Ação */}
       {bets.length > 0 && (
-        <div className="bg-primary p-4 border-t border-border-custom space-y-3">
+        <div className="bg-primary p-4 border-t border-border-custom space-y-3 rounded-b-xl">
              <div className="flex justify-between items-center text-sm">
                 <span className="text-text-muted">Odds Totais</span>
                 <span className="text-accent-gold font-bold">
@@ -208,6 +222,7 @@ export default function BetSlip({ bets, onRemoveBet, onClearBets, className = ''
             </button>
         </div>
       )}
+      </div> {/* Fim do Conteúdo Expansível */}
     </div>
   );
 }

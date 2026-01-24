@@ -8,6 +8,9 @@ import LiveMatchInfo from './LiveMatchInfo';
 
 import HeroCarousel from './HeroCarousel';
 import AnimatedBanner from '../layout/AnimatedBanner';
+import PopularBetsWidget from './PopularBetsWidget';
+import LongTermBetsWidget from './LongTermBetsWidget';
+import OddsSettingsWidget from './OddsSettingsWidget';
 
 export default function SportsPage() {
   const [bets, setBets] = useState<Bet[]>([]);
@@ -49,8 +52,9 @@ export default function SportsPage() {
       </main>
 
       {/* Sidebar Direita (Cupom / Detalhes / Mini Games) */}
-      <aside className="hidden lg:flex flex-col w-80 sticky top-20 h-[calc(100vh-80px)] overflow-y-auto border-l border-border-custom bg-secondary p-4 gap-4 z-30 shrink-0">
+      <aside className="hidden lg:flex flex-col w-80 sticky top-4 h-[calc(100vh-1rem)] border-l border-border-custom bg-secondary z-30 shrink-0">
         
+        <div className="flex-1 overflow-y-auto p-4 gap-4 flex flex-col scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
         {/* Renderização Condicional da Sidebar Direita */}
         {rightSidebarMode === 'matchInfo' && selectedMatch ? (
             <>
@@ -70,19 +74,33 @@ export default function SportsPage() {
                 <MiniGamesSidebar />
             </>
         ) : (
-            // Modo Cupom (Padrão)
-            <BetSlip 
-                bets={bets} 
-                onRemoveBet={handleRemoveBet} 
-                onClearBets={handleClearBets} 
-                className="h-[calc(100vh-120px)] sticky top-24"
-            />
+            // Modo Cupom (Padrão) + Widgets Extras
+            <div className="flex flex-col gap-4">
+                <BetSlip 
+                    bets={bets} 
+                    onRemoveBet={handleRemoveBet} 
+                    onClearBets={handleClearBets} 
+                    className=""
+                    expandOnHover={true}
+                />
+                
+                <PopularBetsWidget />
+                <LongTermBetsWidget />
+            </div>
+        )}
+        </div>
+
+        {/* Fixed Footer for Odds Settings (Only in BetSlip mode) */}
+        {rightSidebarMode === 'betslip' && (
+             <div className="p-4 pt-0 mt-auto bg-secondary">
+                 <OddsSettingsWidget />
+             </div>
         )}
 
       </aside>
 
       {/* Mobile BetSlip Toggle (Sliding Bottom Sheet) */}
-      <div className={`lg:hidden fixed bottom-0 left-0 right-0 z-50 transition-transform duration-300 ease-in-out ${isBetSlipOpen ? 'translate-y-0' : 'translate-y-[calc(100%-3.8rem)]'}`}>
+      <div className={`lg:hidden fixed bottom-0 left-0 right-0 z-50 transition-transform duration-300 ease-in-out ${isBetSlipOpen ? 'translate-y-0' : 'translate-y-[calc(100%-3.5rem)]'}`}>
         <div className="h-[75vh] shadow-[0_-4px_30px_rgba(0,0,0,0.8)]">
             <BetSlip 
                 bets={bets} 

@@ -6,7 +6,6 @@ import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
 import Footer from "@/components/layout/Footer";
 import BottomNavigation from "@/components/layout/BottomNavigation";
-import ChatButton from "@/components/layout/ChatButton";
 import { ThemeProvider } from "@/context/ThemeContext";
 
 const geistSans = Geist({
@@ -47,7 +46,6 @@ export default function RootLayout({
             </main>
           </div>
           <BottomNavigation />
-          <ChatButton />
         </ThemeProvider>
       </body>
     </html>
