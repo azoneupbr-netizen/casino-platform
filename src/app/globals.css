@@ -1,0 +1,97 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: var(--bg-primary);
+  --color-secondary: var(--bg-secondary);
+  --color-tertiary: var(--bg-tertiary);
+  --color-accent-primary: var(--accent-primary);
+  --color-accent-secondary: var(--accent-secondary);
+  --color-accent-gold: var(--accent-gold);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-border-custom: var(--border-color); /* Renamed to avoid conflict with border utility */
+  
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+/* Dark Mode (Default) */
+:root {
+  --bg-primary: #060614; /* Escurecido */
+  --bg-secondary: #0F0F24; /* Escurecido */
+  --bg-tertiary: #1A1A35; /* Escurecido */
+  
+  --accent-primary: #E91E63;
+  --accent-secondary: #9C27B0;
+  --accent-gold: #FFD700;
+  
+  --text-primary: #FFFFFF;
+  --text-secondary: #B8B8D4;
+  --text-muted: #6E6E8F;
+  
+  --border-color: #1A1A35; /* Ajustado */
+  
+  --background: var(--bg-primary);
+  --foreground: var(--text-primary);
+}
+
+/* Light Mode */
+.light {
+  --bg-primary: #F5F7FA;
+  --bg-secondary: #FFFFFF;
+  --bg-tertiary: #E8EDF2;
+  
+  --accent-primary: #2563EB;
+  --accent-secondary: #7C3AED;
+  --accent-gold: #F59E0B;
+  
+  --text-primary: #1E293B;
+  --text-secondary: #475569;
+  --text-muted: #94A3B8;
+  
+  --border-color: #E2E8F0;
+  
+  --background: var(--bg-primary);
+  --foreground: var(--text-primary);
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Scrollbar Customization */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary); 
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bg-tertiary); 
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-primary); 
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.2s ease-out forwards;
+}
