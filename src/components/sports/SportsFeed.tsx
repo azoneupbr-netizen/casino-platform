@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 
-interface Match {
+export interface Match {
   id: number;
   league: string;
   homeTeam: string;
