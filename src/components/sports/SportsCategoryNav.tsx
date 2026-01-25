@@ -60,41 +60,45 @@ export default function SportsCategoryNav({ selectedSport, onSelectSport }: Spor
       </div>
 
       {/* Navigation List */}
-      <div className="flex gap-3 overflow-x-auto pb-2 px-2 scrollbar-hide">
+      <div className="flex gap-4 overflow-x-auto pb-4 pt-2 px-2 scrollbar-hide">
         {sports.map((sport) => {
           const isSelected = selectedSport === sport.id;
           return (
             <button
               key={sport.id}
               onClick={() => onSelectSport(sport.id)}
-              className={`group flex items-center gap-3 px-5 py-3 rounded-xl transition-all duration-300 relative whitespace-nowrap min-w-[140px] border ${
-                isSelected
-                  ? 'bg-gradient-to-r from-accent-primary to-accent-secondary border-transparent text-white shadow-lg shadow-accent-primary/20 scale-105'
-                  : 'bg-secondary border-border-custom text-text-muted hover:border-accent-primary/50 hover:text-white hover:bg-white/5'
-              }`}
+              className="group flex flex-col items-center gap-2 min-w-[70px] relative"
             >
-              {/* Icon */}
-              <div className={`w-6 h-6 transition-colors ${isSelected ? 'text-white' : 'text-text-muted group-hover:text-white'}`}>
-                {React.cloneElement(sport.icon as React.ReactElement, { 
-                    className: "w-full h-full" 
-                })}
-              </div>
-
-              {/* Name */}
-              <span className="text-sm font-bold uppercase tracking-wider">
-                {sport.name}
+              {/* Badge Count - Dark bubble style */}
+              <span className={`absolute -top-1 right-1 text-[10px] font-bold px-1.5 py-0.5 rounded-full z-10 transition-colors ${
+                  isSelected
+                  ? 'bg-secondary text-white border border-white/20'
+                  : 'bg-black/40 text-text-muted border border-white/10 group-hover:bg-accent-primary group-hover:text-white'
+              }`}>
+                {sport.count}
               </span>
 
-              {/* Badge (Optional - kept small) */}
-              {sport.count > 0 && (
-                <span className={`ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-md ${
-                    isSelected 
-                    ? 'bg-white/20 text-white' 
-                    : 'bg-primary text-text-muted group-hover:text-white group-hover:bg-white/10'
-                }`}>
-                  {sport.count}
-                </span>
-              )}
+              {/* Icon Container - Circle Style */}
+              <div className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 ${
+                isSelected 
+                  ? 'bg-gradient-to-br from-accent-primary to-accent-secondary text-white shadow-[0_0_15px_rgba(233,30,99,0.5)] scale-110' 
+                  : 'bg-white/5 text-text-muted opacity-50 grayscale group-hover:grayscale-0 group-hover:opacity-100 group-hover:text-white group-hover:bg-gradient-to-br group-hover:from-accent-primary group-hover:to-accent-secondary group-hover:scale-110 group-hover:shadow-[0_0_15px_rgba(233,30,99,0.5)]'
+              }`}>
+                <div className="w-7 h-7">
+                    {React.cloneElement(sport.icon as React.ReactElement, { 
+                        className: "w-full h-full" 
+                    })}
+                </div>
+              </div>
+
+              {/* Name - Below icon */}
+              <span className={`text-[11px] font-bold uppercase tracking-wider transition-colors ${
+                isSelected 
+                  ? 'text-accent-primary drop-shadow-[0_0_5px_rgba(233,30,99,0.3)]' 
+                  : 'text-text-muted group-hover:text-white'
+              }`}>
+                {sport.name}
+              </span>
             </button>
           );
         })}
