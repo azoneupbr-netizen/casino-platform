@@ -5,7 +5,7 @@ export default function NotificationsPage() {
   const notifications = [
     { id: 1, title: 'Bônus de Boas-vindas', message: 'Seu bônus de 100% até R$ 500 está disponível!', time: '2 horas atrás', read: false },
     { id: 2, title: 'Saque Aprovado', message: 'Seu saque de R$ 150,00 foi processado com sucesso.', time: '1 dia atrás', read: true },
-    { id: 3, title: 'Novo Jogo: Allyk Wild', message: 'Experimente o novo slot exclusivo com multiplicadores de até 5000x.', time: '2 dias atrás', read: true },
+    { id: 3, title: 'Novo Jogo: Brand Wild', message: 'Experimente o novo slot exclusivo com multiplicadores de até 5000x.', time: '2 dias atrás', read: true },
   ];
 
   return (

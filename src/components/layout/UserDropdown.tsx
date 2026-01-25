@@ -38,7 +38,7 @@ export default function UserDropdown({ isOpen, onClose, onLogout, onSupportClick
                          <img src="https://api.dicebear.com/9.x/avataaars/svg?seed=Felix" alt="Avatar" className="w-full h-full object-cover" />
                     </div>
                     <div>
-                        <h3 className="font-bold text-lg leading-tight">Allyk Medvediev</h3>
+                        <h3 className="font-bold text-lg leading-tight">Brand Medvediev</h3>
                         <p className="text-xs text-gray-400">ID: 87439201</p>
                     </div>
                 </div>
@@ -46,7 +46,7 @@ export default function UserDropdown({ isOpen, onClose, onLogout, onSupportClick
                 {/* VIP Progress */}
                 <div className="bg-[#2a2e3e] rounded-lg p-3">
                     <div className="flex justify-between items-center mb-1">
-                        <span className="text-xs font-bold text-[#ccff00]">MEMBRO ALLYK</span>
+                        <span className="text-xs font-bold text-[#ccff00]">MEMBRO BRAND</span>
                         <span className="text-[10px] text-gray-400">65%</span>
                     </div>
                     <div className="h-1.5 bg-gray-700 rounded-full overflow-hidden">
@@ -55,7 +55,7 @@ export default function UserDropdown({ isOpen, onClose, onLogout, onSupportClick
                     
                     <button className="w-full mt-3 bg-[#2a2e3e] hover:bg-[#353a4d] text-white text-xs py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2 font-medium">
                         <Link href="/rewards" className="flex items-center gap-2 w-full justify-center">
-                            <span className="transform rotate-90 text-[10px]">›</span> Ver mais sobre Allyk VIP
+                            <span className="transform rotate-90 text-[10px]">›</span> Ver mais sobre Brand VIP
                         </Link>
                     </button>
                 </div>

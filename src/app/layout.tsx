@@ -19,7 +19,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Allyk Casino",
+  title: "Brand Casino",
   description: "A melhor plataforma de apostas esportivas e cassino online.",
 };
 

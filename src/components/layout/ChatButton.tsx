@@ -37,7 +37,7 @@ export default function ChatButton() {
           {/* Área de Mensagens */}
           <div className="flex-1 p-4 overflow-y-auto space-y-4">
             <div className="bg-[#1a2942] p-3 rounded-lg rounded-tl-none max-w-[85%]">
-              <p className="text-slate-300 text-sm">Olá! Bem-vindo ao suporte da Allyk Casino. Como posso ajudar você hoje?</p>
+              <p className="text-slate-300 text-sm">Olá! Bem-vindo ao suporte da Brand Casino. Como posso ajudar você hoje?</p>
               <span className="text-[10px] text-slate-500 block mt-1">Agora</span>
             </div>
           </div>

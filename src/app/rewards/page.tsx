@@ -2,8 +2,8 @@
 import React from 'react';
 
 export default function RewardsPage() {
-  const currentLevel = "MEMBRO ALLYK";
-  const nextLevel = "ALLYK PRATA";
+  const currentLevel = "MEMBRO BRAND";
+  const nextLevel = "BRAND PRATA";
   const progress = 65; // percentage
   const points = 6500;
   const nextLevelPoints = 10000;
@@ -15,7 +15,7 @@ export default function RewardsPage() {
         <div className="flex flex-col md:flex-row items-center justify-between mb-10 gap-6">
             <div>
                 <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-                    <span className="text-[#ccff00]">👑</span> Allyk VIP
+                    <span className="text-[#ccff00]">👑</span> Brand VIP
                 </h1>
                 <p className="text-slate-400 mt-2">Suba de nível e desbloqueie recompensas exclusivas.</p>
             </div>
@@ -97,25 +97,25 @@ export default function RewardsPage() {
                     </thead>
                     <tbody className="divide-y divide-slate-800">
                         <tr className="bg-[#ccff00]/5">
-                            <td className="px-6 py-4 font-bold text-[#ccff00]">Membro Allyk (Atual)</td>
+                            <td className="px-6 py-4 font-bold text-[#ccff00]">Membro Brand (Atual)</td>
                             <td className="px-6 py-4">0</td>
                             <td className="px-6 py-4">5%</td>
                             <td className="px-6 py-4">R$ 10</td>
                         </tr>
                         <tr className="hover:bg-[#1a2942]/20">
-                            <td className="px-6 py-4 font-bold text-slate-300">Allyk Prata</td>
+                            <td className="px-6 py-4 font-bold text-slate-300">Brand Prata</td>
                             <td className="px-6 py-4">10.000</td>
                             <td className="px-6 py-4">8%</td>
                             <td className="px-6 py-4">R$ 50</td>
                         </tr>
                         <tr className="hover:bg-[#1a2942]/20">
-                            <td className="px-6 py-4 font-bold text-yellow-400">Allyk Ouro</td>
+                            <td className="px-6 py-4 font-bold text-yellow-400">Brand Ouro</td>
                             <td className="px-6 py-4">50.000</td>
                             <td className="px-6 py-4">10%</td>
                             <td className="px-6 py-4">R$ 200</td>
                         </tr>
                         <tr className="hover:bg-[#1a2942]/20">
-                            <td className="px-6 py-4 font-bold text-cyan-400">Allyk Platina</td>
+                            <td className="px-6 py-4 font-bold text-cyan-400">Brand Platina</td>
                             <td className="px-6 py-4">250.000</td>
                             <td className="px-6 py-4">12%</td>
                             <td className="px-6 py-4">R$ 1.000</td>

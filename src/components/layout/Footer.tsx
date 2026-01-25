@@ -91,7 +91,7 @@ export default function Footer() {
         </div>
 
         <div className="text-center text-xs mt-8 opacity-50 text-text-muted">
-          &copy; {new Date().getFullYear()} Allyk Casino. Todos os direitos reservados. Operado sob licença nº 8048/JAZ.
+          &copy; {new Date().getFullYear()} Brand Casino. Todos os direitos reservados. Operado sob licença nº 8048/JAZ.
         </div>
       </div>
     </footer>

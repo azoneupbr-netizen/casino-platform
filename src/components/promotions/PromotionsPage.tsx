@@ -84,7 +84,7 @@ export default function PromotionsPage() {
     },
     {
       id: 6,
-      title: 'Programa Allyk VIP',
+      title: 'Programa Brand VIP',
       description: 'Acesso a promoções exclusivas e suporte prioritário',
       bonus: 'Vários',
       type: 'exclusive',

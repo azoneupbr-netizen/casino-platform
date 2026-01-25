@@ -93,7 +93,7 @@ export default function Header() {
       <header className="sticky top-0 left-0 right-0 bg-primary border-b border-border-custom z-50 h-20 transition-colors duration-300">
         <div className="flex items-center justify-between h-full px-6">
           <div className="flex items-center gap-2 w-auto md:w-64"> {/* Largura ajustada */}
-            <span className="text-xl md:text-2xl font-bold text-accent-primary">ALLYK</span>
+            <span className="text-xl md:text-2xl font-bold text-accent-primary">BRAND</span>
             <span className="text-sm md:text-base text-text-primary">CASINO</span>
           </div>
 

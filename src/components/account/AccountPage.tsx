@@ -5,7 +5,7 @@ export default function AccountPage() {
   const [activeTab, setActiveTab] = useState<'profile' | 'security' | 'verification'>('profile');
   
   // Profile State
-  const [name, setName] = useState('Allyk Medvediev');
+  const [name, setName] = useState('Brand Medvediev');
   const [email, setEmail] = useState('allyk@example.com');
   const [phone, setPhone] = useState('+55 11 99999-9999');
 

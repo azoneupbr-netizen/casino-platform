@@ -10,7 +10,7 @@ export default function AgeGateModal({ onConfirm, onReject }: AgeGateModalProps)
   return (
     <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md">
       <div className="bg-[#FBFBFB] w-full max-w-md rounded-xl overflow-hidden shadow-2xl animate-fade-in relative">
-        {/* Header Allyk */}
+        {/* Header Brand */}
         <div className="bg-accent-primary p-6 flex justify-center relative overflow-hidden">
             {/* Shapes decorativos */}
             <h2 className="text-3xl font-bold italic text-white tracking-tighter">ALLYK</h2>
