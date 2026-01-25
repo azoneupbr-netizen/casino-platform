@@ -48,37 +48,57 @@ interface SportsCategoryNavProps {
 
 export default function SportsCategoryNav({ selectedSport, onSelectSport }: SportsCategoryNavProps) {
   return (
-    <div className="flex gap-4 overflow-x-auto pb-4 pt-2 px-2 scrollbar-hide">
-      {sports.map((sport) => (
-        <button
-          key={sport.id}
-          onClick={() => onSelectSport(sport.id)}
-          className="group flex flex-col items-center gap-1.5 min-w-[60px] transition-all relative"
-        >
-          {/* Badge Count */}
-          <span className="absolute -top-1 right-1 bg-secondary text-text-muted text-[9px] font-bold px-1.5 py-0.5 rounded-full border border-border-custom z-10 group-hover:border-accent-primary group-hover:text-accent-primary transition-colors shadow-sm">
-            {sport.count}
-          </span>
+    <div className="w-full mb-6">
+      {/* Header */}
+      <div className="flex items-center gap-2 mb-4 px-2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-accent-gold">
+           <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+        </svg>
+        <h2 className="text-lg md:text-xl font-bold uppercase text-white tracking-wide">
+          Jogos de Destaque
+        </h2>
+      </div>
 
-          {/* Icon Container - Smaller and Glow Effect */}
-          <div className={`p-2.5 rounded-full transition-all duration-300 w-12 h-12 flex items-center justify-center ${
-            selectedSport === sport.id 
-              ? 'bg-gradient-to-br from-accent-primary to-accent-secondary text-white shadow-[0_0_15px_rgba(233,30,99,0.5)] scale-110' 
-              : 'bg-secondary text-text-muted opacity-70 grayscale group-hover:grayscale-0 group-hover:opacity-100 group-hover:text-white group-hover:bg-tertiary group-hover:scale-110 group-hover:shadow-[0_0_10px_rgba(255,255,255,0.3)]'
-          }`}>
-            {sport.icon}
-          </div>
+      {/* Navigation List */}
+      <div className="flex gap-3 overflow-x-auto pb-2 px-2 scrollbar-hide">
+        {sports.map((sport) => {
+          const isSelected = selectedSport === sport.id;
+          return (
+            <button
+              key={sport.id}
+              onClick={() => onSelectSport(sport.id)}
+              className={`group flex items-center gap-3 px-5 py-3 rounded-xl transition-all duration-300 relative whitespace-nowrap min-w-[140px] border ${
+                isSelected
+                  ? 'bg-gradient-to-r from-accent-primary to-accent-secondary border-transparent text-white shadow-lg shadow-accent-primary/20 scale-105'
+                  : 'bg-secondary border-border-custom text-text-muted hover:border-accent-primary/50 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              {/* Icon */}
+              <div className={`w-6 h-6 transition-colors ${isSelected ? 'text-white' : 'text-text-muted group-hover:text-white'}`}>
+                {React.cloneElement(sport.icon as React.ReactElement, { 
+                    className: "w-full h-full" 
+                })}
+              </div>
 
-          {/* Name */}
-          <span className={`text-[10px] font-bold uppercase tracking-wider transition-colors ${
-            selectedSport === sport.id 
-              ? 'text-accent-primary drop-shadow-[0_0_5px_rgba(233,30,99,0.3)]' 
-              : 'text-text-muted group-hover:text-white'
-          }`}>
-            {sport.name}
-          </span>
-        </button>
-      ))}
+              {/* Name */}
+              <span className="text-sm font-bold uppercase tracking-wider">
+                {sport.name}
+              </span>
+
+              {/* Badge (Optional - kept small) */}
+              {sport.count > 0 && (
+                <span className={`ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-md ${
+                    isSelected 
+                    ? 'bg-white/20 text-white' 
+                    : 'bg-primary text-text-muted group-hover:text-white group-hover:bg-white/10'
+                }`}>
+                  {sport.count}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
