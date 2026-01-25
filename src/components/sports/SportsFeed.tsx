@@ -126,11 +126,6 @@ export default function SportsFeed({ onAddBet, onMatchSelect, bets = [] }: Sport
   const [selectedMarket, setSelectedMarket] = React.useState('winner'); // winner, overUnder, bothScore, doubleChance
 
   const handleBetClick = (match: Match, selection: string, odd: number, type: string) => {
-      // Verifica se já existe para evitar duplicação (opcional, ou toggle)
-      const betId = `${match.id}-${selection}`;
-      // Aqui simplificamos, a lógica de remover/toggle poderia ser no pai, 
-      // mas vamos apenas adicionar por enquanto ou ignorar se já existe.
-      
       const isSelected = bets.some(b => b.eventName === `${match.homeTeam} vs ${match.awayTeam}` && b.selection === selection);
       
       if (!isSelected) {
@@ -144,267 +139,185 @@ export default function SportsFeed({ onAddBet, onMatchSelect, bets = [] }: Sport
   };
 
   return (
-    <div className="flex-1 space-y-4">
-      {/* Seletor de Mercados */}
-      <div className="flex gap-2 mb-4 overflow-x-auto pb-2 scrollbar-hide">
+    <div className="flex-1">
+      {/* Seletor de Mercados - Estilo Tabs */}
+      <div className="flex gap-6 mb-2 border-b border-border-custom px-2 overflow-x-auto scrollbar-hide">
         {['Vencedor', 'Acima/Abaixo', 'Ambos Marcam', 'Chance Dupla'].map((market) => {
           const marketKey = market === 'Vencedor' ? 'winner' : 
                             market === 'Acima/Abaixo' ? 'overUnder' :
                             market === 'Ambos Marcam' ? 'bothScore' : 'doubleChance';
+          const isActive = selectedMarket === marketKey;
           return (
             <button
               key={market}
               onClick={() => setSelectedMarket(marketKey)}
-              className={`px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap transition-colors flex items-center gap-2 ${
-                  selectedMarket === marketKey 
-                  ? 'bg-secondary text-accent-gold border border-accent-gold' 
-                  : 'bg-secondary text-text-muted hover:text-text-primary border border-transparent'
+              className={`pb-3 text-sm font-bold whitespace-nowrap transition-colors relative ${
+                  isActive
+                  ? 'text-accent-gold' 
+                  : 'text-text-muted hover:text-text-primary'
               }`}
             >
               {market}
-              <span className="text-xs">▼</span>
+              {isActive && (
+                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-accent-gold rounded-t-full"></span>
+              )}
             </button>
           )
         })}
       </div>
 
-      {/* Lista de Jogos */}
-      <div className="space-y-3">
+      {/* Lista de Jogos - Estilo Compacto/Linha */}
+      <div className="bg-secondary rounded-xl border border-border-custom divide-y divide-border-custom overflow-hidden">
         {matches.map((match) => (
           <div 
             key={match.id}
-            className="bg-secondary border border-border-custom rounded-xl p-4 hover:border-accent-primary transition-all cursor-pointer group shadow-sm"
+            className="flex flex-col md:flex-row md:items-center p-3 hover:bg-white/5 transition-colors gap-4"
           >
-            {/* Click Area para Detalhes (Exclui botões de odds) */}
-            <div onClick={() => onMatchSelect(match)}>
-                {/* Cabeçalho do Card */}
-                <div className="flex justify-between items-center mb-4">
-                  <div className="flex items-center gap-2 text-xs text-text-muted">
-                    <span className="font-bold">{match.league}</span>
-                    <span>•</span>
-                    <span className={`${match.isLive ? 'text-red-500 animate-pulse font-bold' : ''}`}>
-                      {match.time}
-                    </span>
-                  </div>
-                  <div className="text-text-muted text-xs hover:text-accent-primary flex items-center gap-1">
-                    <span>+152 mercados</span>
-                    <span className="text-lg">›</span>
-                  </div>
+            {/* Informações da Partida (Esquerda) */}
+            <div 
+                className="flex items-center gap-4 flex-1 cursor-pointer min-w-0"
+                onClick={() => onMatchSelect(match)}
+            >
+                {/* Tempo */}
+                <div className="flex flex-col items-center justify-center w-12 text-xs shrink-0">
+                   <span className={`${match.isLive ? 'text-red-500 font-bold animate-pulse' : 'text-text-muted'}`}>
+                     {match.time.replace('AO VIVO ', '')}
+                   </span>
+                   {!match.isLive && <span className="text-[10px] text-text-muted">Hoje</span>}
                 </div>
-
-                {/* Times e Placar */}
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <span className="text-xl">{match.homeIcon}</span>
-                      <span className="text-text-primary font-bold group-hover:text-accent-primary transition-colors">{match.homeTeam}</span>
-                      {match.isLive && <span className="ml-auto font-mono text-accent-gold font-bold">{match.score?.split(' - ')[0]}</span>}
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className="text-xl">{match.awayIcon}</span>
-                      <span className="text-text-primary font-bold group-hover:text-accent-primary transition-colors">{match.awayTeam}</span>
-                      {match.isLive && <span className="ml-auto font-mono text-accent-gold font-bold">{match.score?.split(' - ')[1]}</span>}
-                    </div>
-                  </div>
+                
+                {/* Times */}
+                <div className="flex flex-col gap-1 min-w-0 flex-1">
+                   <div className="flex items-center gap-2">
+                      <span className="text-sm shrink-0">{match.homeIcon}</span>
+                      <span className="text-sm font-medium text-text-primary truncate">{match.homeTeam}</span>
+                      {match.isLive && <span className="ml-auto text-xs font-mono text-accent-gold">{match.score?.split(' - ')[0]}</span>}
+                   </div>
+                   <div className="flex items-center gap-2">
+                      <span className="text-sm shrink-0">{match.awayIcon}</span>
+                      <span className="text-sm font-medium text-text-primary truncate">{match.awayTeam}</span>
+                      {match.isLive && <span className="ml-auto text-xs font-mono text-accent-gold">{match.score?.split(' - ')[1]}</span>}
+                   </div>
                 </div>
             </div>
 
-            {/* Odds (1x2) - Vencedor */}
-            {selectedMarket === 'winner' && (
-                <div className="grid grid-cols-3 gap-2">
-                <button 
-                    onClick={() => handleBetClick(match, 'Casa', match.odds.home, 'Vencedor')}
-                    className={`rounded-lg p-2 text-center transition-colors group/odd ${
-                    bets.some(b => b.eventName === `${match.homeTeam} vs ${match.awayTeam}` && b.selection === 'Casa')
-                        ? 'bg-accent-gold text-primary'
-                        : 'bg-primary hover:bg-tertiary'
-                    }`}
-                >
-                    <span className={`block text-xs mb-1 ${
-                    bets.some(b => b.eventName === `${match.homeTeam} vs ${match.awayTeam}` && b.selection === 'Casa') ? 'text-primary' : 'text-text-muted'
-                    }`}>1</span>
-                    <span className={`block font-bold ${
-                    bets.some(b => b.eventName === `${match.homeTeam} vs ${match.awayTeam}` && b.selection === 'Casa') ? 'text-primary' : 'text-accent-gold group-hover/odd:text-accent-primary'
-                    }`}>
-                    {match.odds.home.toFixed(2)}
-                    </span>
+            {/* Odds (Direita) */}
+            <div className="flex items-center gap-2 md:w-auto w-full overflow-x-auto scrollbar-hide">
+                {selectedMarket === 'winner' && (
+                    <div className="flex gap-2 w-full md:w-auto">
+                        {[
+                            { label: '1', val: match.odds.home, sel: 'Casa' },
+                            { label: 'X', val: match.odds.draw, sel: 'Empate' },
+                            { label: '2', val: match.odds.away, sel: 'Fora' }
+                        ].map((item) => (
+                            <button 
+                                key={item.sel}
+                                onClick={() => handleBetClick(match, item.sel, item.val, 'Vencedor')}
+                                className={`flex items-center justify-between px-3 py-2 rounded-md transition-colors min-w-[80px] text-sm border ${
+                                    bets.some(b => b.eventName === `${match.homeTeam} vs ${match.awayTeam}` && b.selection === item.sel)
+                                    ? 'bg-accent-gold text-primary border-accent-gold'
+                                    : 'bg-primary border-transparent hover:border-gray-600 text-text-muted hover:text-text-primary'
+                                }`}
+                            >
+                                <span className="mr-2">{item.label}</span>
+                                <span className={`font-bold ${
+                                    bets.some(b => b.eventName === `${match.homeTeam} vs ${match.awayTeam}` && b.selection === item.sel)
+                                    ? 'text-primary'
+                                    : 'text-accent-gold'
+                                }`}>{item.val.toFixed(2)}</span>
+                            </button>
+                        ))}
+                    </div>
+                )}
+
+                {selectedMarket === 'overUnder' && (
+                    <div className="flex gap-2 w-full md:w-auto">
+                        {[
+                            { label: 'Over 2.5', val: match.odds.over25 || 1.5, sel: 'Acima 2.5' },
+                            { label: 'Under 2.5', val: match.odds.under25 || 2.5, sel: 'Abaixo 2.5' }
+                        ].map((item) => (
+                            <button 
+                                key={item.sel}
+                                onClick={() => handleBetClick(match, item.sel, item.val, 'Gols')}
+                                className={`flex items-center justify-between px-3 py-2 rounded-md transition-colors min-w-[100px] text-sm border ${
+                                    bets.some(b => b.eventName === `${match.homeTeam} vs ${match.awayTeam}` && b.selection === item.sel)
+                                    ? 'bg-accent-gold text-primary border-accent-gold'
+                                    : 'bg-primary border-transparent hover:border-gray-600 text-text-muted hover:text-text-primary'
+                                }`}
+                            >
+                                <span className="mr-2 text-xs">{item.label}</span>
+                                <span className={`font-bold ${
+                                    bets.some(b => b.eventName === `${match.homeTeam} vs ${match.awayTeam}` && b.selection === item.sel)
+                                    ? 'text-primary'
+                                    : 'text-accent-gold'
+                                }`}>{item.val.toFixed(2)}</span>
+                            </button>
+                        ))}
+                    </div>
+                )}
+
+                {selectedMarket === 'bothScore' && (
+                    <div className="flex gap-2 w-full md:w-auto">
+                        {[
+                            { label: 'Sim', val: match.odds.bothScoreYes || 1.9, sel: 'Sim' },
+                            { label: 'Não', val: match.odds.bothScoreNo || 1.9, sel: 'Não' }
+                        ].map((item) => (
+                            <button 
+                                key={item.sel}
+                                onClick={() => handleBetClick(match, item.sel, item.val, 'Ambos Marcam')}
+                                className={`flex items-center justify-between px-3 py-2 rounded-md transition-colors min-w-[80px] text-sm border ${
+                                    bets.some(b => b.eventName === `${match.homeTeam} vs ${match.awayTeam}` && b.selection === item.sel)
+                                    ? 'bg-accent-gold text-primary border-accent-gold'
+                                    : 'bg-primary border-transparent hover:border-gray-600 text-text-muted hover:text-text-primary'
+                                }`}
+                            >
+                                <span className="mr-2">{item.label}</span>
+                                <span className={`font-bold ${
+                                    bets.some(b => b.eventName === `${match.homeTeam} vs ${match.awayTeam}` && b.selection === item.sel)
+                                    ? 'text-primary'
+                                    : 'text-accent-gold'
+                                }`}>{item.val.toFixed(2)}</span>
+                            </button>
+                        ))}
+                    </div>
+                )}
+
+                {selectedMarket === 'doubleChance' && (
+                    <div className="flex gap-2 w-full md:w-auto">
+                        {[
+                            { label: '1X', val: match.odds.doubleChance1X || 1.2, sel: '1X' },
+                            { label: '12', val: match.odds.doubleChance12 || 1.2, sel: '12' },
+                            { label: 'X2', val: match.odds.doubleChanceX2 || 1.2, sel: 'X2' }
+                        ].map((item) => (
+                            <button 
+                                key={item.sel}
+                                onClick={() => handleBetClick(match, item.sel, item.val, 'Chance Dupla')}
+                                className={`flex items-center justify-between px-3 py-2 rounded-md transition-colors min-w-[70px] text-sm border ${
+                                    bets.some(b => b.eventName === `${match.homeTeam} vs ${match.awayTeam}` && b.selection === item.sel)
+                                    ? 'bg-accent-gold text-primary border-accent-gold'
+                                    : 'bg-primary border-transparent hover:border-gray-600 text-text-muted hover:text-text-primary'
+                                }`}
+                            >
+                                <span className="mr-2">{item.label}</span>
+                                <span className={`font-bold ${
+                                    bets.some(b => b.eventName === `${match.homeTeam} vs ${match.awayTeam}` && b.selection === item.sel)
+                                    ? 'text-primary'
+                                    : 'text-accent-gold'
+                                }`}>{item.val.toFixed(2)}</span>
+                            </button>
+                        ))}
+                    </div>
+                )}
+
+                {/* Botão de Estatísticas */}
+                <button className="p-2 text-text-muted hover:text-white transition-colors ml-2 hidden md:block">
+                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="18" y1="20" x2="18" y2="10"></line>
+                      <line x1="12" y1="20" x2="12" y2="4"></line>
+                      <line x1="6" y1="20" x2="6" y2="14"></line>
+                   </svg>
                 </button>
-
-                <button 
-                    onClick={() => handleBetClick(match, 'Empate', match.odds.draw, 'Vencedor')}
-                    className={`rounded-lg p-2 text-center transition-colors group/odd ${
-                    bets.some(b => b.eventName === `${match.homeTeam} vs ${match.awayTeam}` && b.selection === 'Empate')
-                        ? 'bg-accent-gold text-primary'
-                        : 'bg-primary hover:bg-tertiary'
-                    }`}
-                >
-                    <span className={`block text-xs mb-1 ${
-                    bets.some(b => b.eventName === `${match.homeTeam} vs ${match.awayTeam}` && b.selection === 'Empate') ? 'text-primary' : 'text-text-muted'
-                    }`}>X</span>
-                    <span className={`block font-bold ${
-                    bets.some(b => b.eventName === `${match.homeTeam} vs ${match.awayTeam}` && b.selection === 'Empate') ? 'text-primary' : 'text-accent-gold group-hover/odd:text-accent-primary'
-                    }`}>
-                    {match.odds.draw.toFixed(2)}
-                    </span>
-                </button>
-
-                <button 
-                    onClick={() => handleBetClick(match, 'Fora', match.odds.away, 'Vencedor')}
-                    className={`rounded-lg p-2 text-center transition-colors group/odd ${
-                    bets.some(b => b.eventName === `${match.homeTeam} vs ${match.awayTeam}` && b.selection === 'Fora')
-                        ? 'bg-accent-gold text-primary'
-                        : 'bg-primary hover:bg-tertiary'
-                    }`}
-                >
-                    <span className={`block text-xs mb-1 ${
-                    bets.some(b => b.eventName === `${match.homeTeam} vs ${match.awayTeam}` && b.selection === 'Fora') ? 'text-primary' : 'text-text-muted'
-                    }`}>2</span>
-                    <span className={`block font-bold ${
-                    bets.some(b => b.eventName === `${match.homeTeam} vs ${match.awayTeam}` && b.selection === 'Fora') ? 'text-primary' : 'text-accent-gold group-hover/odd:text-accent-primary'
-                    }`}>
-                    {match.odds.away.toFixed(2)}
-                    </span>
-                </button>
-                </div>
-            )}
-
-            {/* Odds - Acima/Abaixo */}
-            {selectedMarket === 'overUnder' && (
-                <div className="grid grid-cols-2 gap-2">
-                    <button 
-                        onClick={() => handleBetClick(match, 'Acima 2.5', match.odds.over25 || 1.5, 'Gols')}
-                        className={`rounded-lg p-2 text-center transition-colors group/odd ${
-                        bets.some(b => b.eventName === `${match.homeTeam} vs ${match.awayTeam}` && b.selection === 'Acima 2.5')
-                            ? 'bg-accent-gold text-primary'
-                            : 'bg-primary hover:bg-tertiary'
-                        }`}
-                    >
-                        <span className={`block text-xs mb-1 ${
-                        bets.some(b => b.eventName === `${match.homeTeam} vs ${match.awayTeam}` && b.selection === 'Acima 2.5') ? 'text-primary' : 'text-text-muted'
-                        }`}>Acima 2.5</span>
-                        <span className={`block font-bold ${
-                        bets.some(b => b.eventName === `${match.homeTeam} vs ${match.awayTeam}` && b.selection === 'Acima 2.5') ? 'text-primary' : 'text-accent-gold group-hover/odd:text-accent-primary'
-                        }`}>
-                        {match.odds.over25?.toFixed(2)}
-                        </span>
-                    </button>
-                    <button 
-                        onClick={() => handleBetClick(match, 'Abaixo 2.5', match.odds.under25 || 2.5, 'Gols')}
-                        className={`rounded-lg p-2 text-center transition-colors group/odd ${
-                        bets.some(b => b.eventName === `${match.homeTeam} vs ${match.awayTeam}` && b.selection === 'Abaixo 2.5')
-                            ? 'bg-accent-gold text-primary'
-                            : 'bg-primary hover:bg-tertiary'
-                        }`}
-                    >
-                        <span className={`block text-xs mb-1 ${
-                        bets.some(b => b.eventName === `${match.homeTeam} vs ${match.awayTeam}` && b.selection === 'Abaixo 2.5') ? 'text-primary' : 'text-text-muted'
-                        }`}>Abaixo 2.5</span>
-                        <span className={`block font-bold ${
-                        bets.some(b => b.eventName === `${match.homeTeam} vs ${match.awayTeam}` && b.selection === 'Abaixo 2.5') ? 'text-primary' : 'text-accent-gold group-hover/odd:text-accent-primary'
-                        }`}>
-                        {match.odds.under25?.toFixed(2)}
-                        </span>
-                    </button>
-                </div>
-            )}
-
-            {/* Odds - Ambos Marcam */}
-            {selectedMarket === 'bothScore' && (
-                <div className="grid grid-cols-2 gap-2">
-                    <button 
-                        onClick={() => handleBetClick(match, 'Sim', match.odds.bothScoreYes || 1.9, 'Ambos Marcam')}
-                        className={`rounded-lg p-2 text-center transition-colors group/odd ${
-                        bets.some(b => b.eventName === `${match.homeTeam} vs ${match.awayTeam}` && b.selection === 'Sim')
-                            ? 'bg-accent-gold text-primary'
-                            : 'bg-primary hover:bg-tertiary'
-                        }`}
-                    >
-                        <span className={`block text-xs mb-1 ${
-                        bets.some(b => b.eventName === `${match.homeTeam} vs ${match.awayTeam}` && b.selection === 'Sim') ? 'text-primary' : 'text-text-muted'
-                        }`}>Sim</span>
-                        <span className={`block font-bold ${
-                        bets.some(b => b.eventName === `${match.homeTeam} vs ${match.awayTeam}` && b.selection === 'Sim') ? 'text-primary' : 'text-accent-gold group-hover/odd:text-accent-primary'
-                        }`}>
-                        {match.odds.bothScoreYes?.toFixed(2)}
-                        </span>
-                    </button>
-                    <button 
-                        onClick={() => handleBetClick(match, 'Não', match.odds.bothScoreNo || 1.9, 'Ambos Marcam')}
-                        className={`rounded-lg p-2 text-center transition-colors group/odd ${
-                        bets.some(b => b.eventName === `${match.homeTeam} vs ${match.awayTeam}` && b.selection === 'Não')
-                            ? 'bg-accent-gold text-primary'
-                            : 'bg-primary hover:bg-tertiary'
-                        }`}
-                    >
-                        <span className={`block text-xs mb-1 ${
-                        bets.some(b => b.eventName === `${match.homeTeam} vs ${match.awayTeam}` && b.selection === 'Não') ? 'text-primary' : 'text-text-muted'
-                        }`}>Não</span>
-                        <span className={`block font-bold ${
-                        bets.some(b => b.eventName === `${match.homeTeam} vs ${match.awayTeam}` && b.selection === 'Não') ? 'text-primary' : 'text-accent-gold group-hover/odd:text-accent-primary'
-                        }`}>
-                        {match.odds.bothScoreNo?.toFixed(2)}
-                        </span>
-                    </button>
-                </div>
-            )}
-
-            {/* Odds - Chance Dupla */}
-            {selectedMarket === 'doubleChance' && (
-                <div className="grid grid-cols-3 gap-2">
-                    <button 
-                        onClick={() => handleBetClick(match, '1X', match.odds.doubleChance1X || 1.2, 'Chance Dupla')}
-                        className={`rounded-lg p-2 text-center transition-colors group/odd ${
-                        bets.some(b => b.eventName === `${match.homeTeam} vs ${match.awayTeam}` && b.selection === '1X')
-                            ? 'bg-accent-gold text-primary'
-                            : 'bg-primary hover:bg-tertiary'
-                        }`}
-                    >
-                        <span className={`block text-xs mb-1 ${
-                        bets.some(b => b.eventName === `${match.homeTeam} vs ${match.awayTeam}` && b.selection === '1X') ? 'text-primary' : 'text-text-muted'
-                        }`}>1X</span>
-                        <span className={`block font-bold ${
-                        bets.some(b => b.eventName === `${match.homeTeam} vs ${match.awayTeam}` && b.selection === '1X') ? 'text-primary' : 'text-accent-gold group-hover/odd:text-accent-primary'
-                        }`}>
-                        {match.odds.doubleChance1X?.toFixed(2)}
-                        </span>
-                    </button>
-                    <button 
-                        onClick={() => handleBetClick(match, 'X2', match.odds.doubleChanceX2 || 1.2, 'Chance Dupla')}
-                        className={`rounded-lg p-2 text-center transition-colors group/odd ${
-                        bets.some(b => b.eventName === `${match.homeTeam} vs ${match.awayTeam}` && b.selection === 'X2')
-                            ? 'bg-accent-gold text-primary'
-                            : 'bg-primary hover:bg-tertiary'
-                        }`}
-                    >
-                        <span className={`block text-xs mb-1 ${
-                        bets.some(b => b.eventName === `${match.homeTeam} vs ${match.awayTeam}` && b.selection === 'X2') ? 'text-primary' : 'text-text-muted'
-                        }`}>X2</span>
-                        <span className={`block font-bold ${
-                        bets.some(b => b.eventName === `${match.homeTeam} vs ${match.awayTeam}` && b.selection === 'X2') ? 'text-primary' : 'text-accent-gold group-hover/odd:text-accent-primary'
-                        }`}>
-                        {match.odds.doubleChanceX2?.toFixed(2)}
-                        </span>
-                    </button>
-                    <button 
-                        onClick={() => handleBetClick(match, '12', match.odds.doubleChance12 || 1.2, 'Chance Dupla')}
-                        className={`rounded-lg p-2 text-center transition-colors group/odd ${
-                        bets.some(b => b.eventName === `${match.homeTeam} vs ${match.awayTeam}` && b.selection === '12')
-                            ? 'bg-accent-gold text-primary'
-                            : 'bg-primary hover:bg-tertiary'
-                        }`}
-                    >
-                        <span className={`block text-xs mb-1 ${
-                        bets.some(b => b.eventName === `${match.homeTeam} vs ${match.awayTeam}` && b.selection === '12') ? 'text-primary' : 'text-text-muted'
-                        }`}>12</span>
-                        <span className={`block font-bold ${
-                        bets.some(b => b.eventName === `${match.homeTeam} vs ${match.awayTeam}` && b.selection === '12') ? 'text-primary' : 'text-accent-gold group-hover/odd:text-accent-primary'
-                        }`}>
-                        {match.odds.doubleChance12?.toFixed(2)}
-                        </span>
-                    </button>
-                </div>
-            )}
-
+            </div>
           </div>
         ))}
       </div>
