@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import HeroBanner from './HeroBanner';
 import TopGames from './TopGames';
+import BonusSlots from './BonusSlots';
 
 export default function CasinoPage() {
   const [selectedCategory, setSelectedCategory] = useState('Todos');
@@ -101,6 +102,9 @@ export default function CasinoPage() {
 
         {/* Top 10 Jogos */}
         <TopGames />
+
+        {/* Bonus Slots Section */}
+        <BonusSlots />
 
         {/* Título Slots */}
         <div className="flex items-center gap-2 mb-6">
