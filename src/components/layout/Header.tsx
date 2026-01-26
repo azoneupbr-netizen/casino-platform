@@ -154,8 +154,8 @@ export default function Header() {
                         className="h-full pl-3 pr-8 bg-transparent text-text-secondary text-xs font-medium focus:ring-0 cursor-pointer hover:text-text-primary outline-none appearance-none"
                         style={{ backgroundImage: 'none' }}
                     >
-                        <option value="Cassino">🎰 Cassino</option>
-                        <option value="Esportes">⚽ Esportes</option>
+                        <option value="Cassino" className="bg-primary text-text-primary">🎰 Cassino</option>
+                        <option value="Esportes" className="bg-primary text-text-primary">⚽ Esportes</option>
                     </select>
                     <div className="absolute right-2 pointer-events-none text-text-secondary">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
