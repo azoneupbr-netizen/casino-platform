@@ -1,6 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import HeroBanner from './HeroBanner';
+import TopGames from './TopGames';
 
 export default function CasinoPage() {
   const [selectedCategory, setSelectedCategory] = useState('Todos');
@@ -96,6 +97,15 @@ export default function CasinoPage() {
               </button>
             ))}
           </div>
+        </div>
+
+        {/* Top 10 Jogos */}
+        <TopGames />
+
+        {/* Título Slots */}
+        <div className="flex items-center gap-2 mb-6">
+          <span className="text-accent-primary text-xl">📍</span>
+          <h2 className="text-2xl font-bold text-text-primary">Slots</h2>
         </div>
 
         {/* Grid de Jogos */}

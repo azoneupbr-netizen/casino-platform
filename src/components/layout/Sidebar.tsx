@@ -1,9 +1,11 @@
 'use client';
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import AnimatedBanner from './AnimatedBanner';
 
 export default function Sidebar() {
+  const pathname = usePathname();
   const [isExpanded, setIsExpanded] = useState(false);
 
   const [hoveredSport, setHoveredSport] = useState<string | null>(null);
@@ -97,6 +99,10 @@ export default function Sidebar() {
     { icon: '♠️', name: 'Blackjack', count: 28 },
     { icon: '🎯', name: 'Crash Games', count: 15 },
   ];
+
+  if (pathname?.startsWith('/account')) {
+    return null;
+  }
 
   return (
     <aside
