@@ -1,6 +1,5 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import QuantumAI from './QuantumAI';
 
 // SVGs para ícones "Ultra Realistas" (Estilizados)
 const GameIcons = {
@@ -161,8 +160,6 @@ export default function BetSlip({ bets, onRemoveBet, onClearBets, className = ''
                  <button className="w-full py-3 px-4 rounded border border-border-custom bg-transparent text-text-muted hover:text-white hover:border-text-muted transition-colors text-sm font-medium">
                     Introduzir código de reserva...
                  </button>
-
-                 <QuantumAI />
             </div>
         ) : (
             bets.map((bet) => (

@@ -4,6 +4,7 @@ export default function QuantumAI() {
   const [query, setQuery] = useState('');
   const [response, setResponse] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   const handleAsk = () => {
     if (!query) return;
@@ -33,12 +34,16 @@ export default function QuantumAI() {
   ];
 
   return (
-    <div className="w-full mt-6 bg-gradient-to-b from-[#1a1f2e] to-[#0f1219] rounded-xl border border-accent-gold/30 overflow-hidden relative group">
+    <div 
+        className="w-full bg-gradient-to-b from-[#1a1f2e] to-[#0f1219] rounded-xl border border-accent-gold/30 overflow-hidden relative group transition-all duration-300"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+    >
       {/* Glow Effect */}
       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-accent-gold to-transparent opacity-50 group-hover:opacity-100 transition-opacity"></div>
       
       {/* Header */}
-      <div className="p-3 bg-white/5 flex items-center gap-2 border-b border-white/5">
+      <div className="p-3 bg-white/5 flex items-center gap-2 border-b border-white/5 cursor-default">
         <span className="text-xl">🧠</span>
         <div>
           <h3 className="text-sm font-bold text-white leading-none">Quantum AI</h3>
@@ -47,6 +52,9 @@ export default function QuantumAI() {
       </div>
 
       {/* Content */}
+      <div className={`transition-all duration-500 ease-in-out overflow-hidden flex flex-col ${
+          !isHovered ? 'max-h-0 opacity-0' : 'max-h-[1000px] opacity-100'
+      }`}>
       <div className="p-4 space-y-4">
         
         {/* Chat Area */}
@@ -119,6 +127,7 @@ export default function QuantumAI() {
       
       {/* Background Decor */}
       <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-accent-gold/5 rounded-full blur-3xl pointer-events-none"></div>
+    </div>
     </div>
   );
 }

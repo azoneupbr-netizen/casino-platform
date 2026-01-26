@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import SportsFeed, { Match } from './SportsFeed';
 import BetSlip, { Bet } from './BetSlip';
+import QuantumAI from './QuantumAI';
 import SportsCategoryNav from './SportsCategoryNav';
 import MiniGamesSidebar from './MiniGamesSidebar';
 import LiveMatchInfo from './LiveMatchInfo';
@@ -84,6 +85,8 @@ export default function SportsPage() {
                     expandOnHover={true}
                 />
                 
+                <QuantumAI />
+
                 <PopularBetsWidget />
                 <LongTermBetsWidget />
             </div>
