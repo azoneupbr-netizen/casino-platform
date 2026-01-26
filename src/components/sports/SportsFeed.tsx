@@ -111,6 +111,57 @@ const matches: Match[] = [
     },
     homeIcon: '🔴',
     awayIcon: '🔵'
+  },
+  {
+    id: 6,
+    league: 'NBA',
+    homeTeam: 'Lakers',
+    awayTeam: 'Warriors',
+    time: "AO VIVO Q3",
+    score: '89 - 88',
+    isLive: true,
+    odds: { 
+        home: 1.85, draw: 12.0, away: 1.95,
+        over25: 1.90, under25: 1.90,
+        bothScoreYes: 1.05, bothScoreNo: 8.00,
+        doubleChance1X: 1.0, doubleChanceX2: 1.0, doubleChance12: 1.0
+    },
+    homeIcon: '🏀',
+    awayIcon: '🌉'
+  },
+  {
+    id: 7,
+    league: 'Tênis ATP',
+    homeTeam: 'Alcaraz',
+    awayTeam: 'Djokovic',
+    time: "AO VIVO Set 2",
+    score: '1 - 0 (4-3)',
+    isLive: true,
+    odds: { 
+        home: 1.70, draw: 0, away: 2.10,
+        over25: 1.85, under25: 1.95,
+        bothScoreYes: 0, bothScoreNo: 0,
+        doubleChance1X: 0, doubleChanceX2: 0, doubleChance12: 0
+    },
+    homeIcon: '🇪🇸',
+    awayIcon: '🇷🇸'
+  },
+  {
+    id: 8,
+    league: 'CS2 Major',
+    homeTeam: 'Furia',
+    awayTeam: 'NaVi',
+    time: "AO VIVO Map 1",
+    score: '11 - 9',
+    isLive: true,
+    odds: { 
+        home: 2.20, draw: 0, away: 1.60,
+        over25: 1.80, under25: 1.90,
+        bothScoreYes: 0, bothScoreNo: 0,
+        doubleChance1X: 0, doubleChanceX2: 0, doubleChance12: 0
+    },
+    homeIcon: '🇧🇷',
+    awayIcon: '🇺🇦'
   }
 ];
 
@@ -320,6 +371,126 @@ export default function SportsFeed({ onAddBet, onMatchSelect, bets = [] }: Sport
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Seção Múltiplas Populares */}
+      <div className="mt-8">
+        <div className="flex items-center gap-2 mb-4">
+           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+           </svg>
+           <h2 className="text-lg font-bold uppercase text-white tracking-wide">MÚLTIPLAS POPULARES</h2>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Column 1 */}
+            <div className="bg-secondary rounded-xl border border-border-custom overflow-hidden flex flex-col">
+                <div className="bg-[#1a1d26] p-3 flex justify-between items-center border-b border-border-custom">
+                    <h3 className="font-bold text-white">Acumuladores Populares</h3>
+                    <span className="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">34.26</span>
+                </div>
+                <div className="p-3 flex-1 flex flex-col gap-3">
+                    {[
+                        { team: 'Flamengo', market: 'Resultado Final', odds: 2.32, info: 'Fluminense - Flamengo' },
+                        { team: 'Corinthians', market: 'Resultado Final', odds: 1.83, info: 'Velo Clube SP - Corinthians' },
+                        { team: 'Cruzeiro', market: 'Resultado Final', odds: 2.65, info: 'Atlético-MG - Cruzeiro' },
+                        { team: 'Grêmio Novorizontino', market: 'Resultado Final', odds: 1.62, info: 'Grêmio - Botafogo-SP' },
+                        { team: 'Vasco da Gama', market: 'Resultado Final', odds: 1.88, info: 'Boavista-RJ - Vasco' },
+                    ].map((item, i) => (
+                        <div key={i} className="flex justify-between items-center bg-primary/50 p-2 rounded border border-white/5">
+                            <div className="flex flex-col gap-1">
+                                <div className="flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-accent-gold"></span>
+                                    <span className="font-bold text-sm text-white">{item.team}</span>
+                                </div>
+                                <span className="text-xs text-text-muted">{item.market}</span>
+                                <span className="text-[10px] text-text-muted">{item.info}</span>
+                            </div>
+                            <div className="bg-white text-black font-bold px-2 py-1 rounded text-sm min-w-[50px] text-center">
+                                {item.odds}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+                <div className="p-3 mt-auto border-t border-border-custom">
+                    <button className="w-full bg-white/10 hover:bg-white/20 text-white font-bold py-3 rounded-lg transition-colors flex justify-center items-center gap-2">
+                        ADICIONAR AO CUPOM <span className="text-accent-gold">» 34.26</span>
+                    </button>
+                </div>
+            </div>
+
+            {/* Column 2 */}
+            <div className="bg-secondary rounded-xl border border-border-custom overflow-hidden flex flex-col">
+                <div className="bg-[#1a1d26] p-3 flex justify-between items-center border-b border-border-custom">
+                    <h3 className="font-bold text-white">Bônus Acumulador</h3>
+                    <span className="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">+15%</span>
+                </div>
+                 <div className="p-3 flex-1 flex flex-col gap-3">
+                    {[
+                        { team: 'SC Braga', market: 'Resultado Final', odds: 1.45, info: 'SC Braga - Alverca' },
+                        { team: 'Boca Juniors', market: 'Resultado Final', odds: 1.62, info: 'Boca Juniors - Dep. Riestra' },
+                        { team: 'Al-Nassr FC', market: 'Resultado Final', odds: 1.31, info: 'Al-Nassr FC - Al-Taawoun' },
+                        { team: 'Argentinos Jrs', market: 'Resultado Final', odds: 1.45, info: 'Argentinos Jrs - Sarmiento' },
+                        { team: 'CA Tigre', market: 'Resultado Final', odds: 2.10, info: 'CA Tigre - Estudiantes' },
+                    ].map((item, i) => (
+                        <div key={i} className="flex justify-between items-center bg-primary/50 p-2 rounded border border-white/5">
+                             <div className="flex flex-col gap-1">
+                                <div className="flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                                    <span className="font-bold text-sm text-white">{item.team}</span>
+                                </div>
+                                <span className="text-xs text-text-muted">{item.market}</span>
+                                <span className="text-[10px] text-text-muted">{item.info}</span>
+                            </div>
+                            <div className="bg-white text-black font-bold px-2 py-1 rounded text-sm min-w-[50px] text-center">
+                                {item.odds}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+                <div className="p-3 mt-auto border-t border-border-custom">
+                    <button className="w-full bg-white/10 hover:bg-white/20 text-white font-bold py-3 rounded-lg transition-colors flex justify-center items-center gap-2">
+                        ADICIONAR AO CUPOM <span className="text-accent-gold">» 9.37</span>
+                    </button>
+                </div>
+            </div>
+
+            {/* Column 3 */}
+            <div className="bg-secondary rounded-xl border border-border-custom overflow-hidden flex flex-col">
+                <div className="bg-[#1a1d26] p-3 flex justify-between items-center border-b border-border-custom">
+                    <h3 className="font-bold text-white">Seleções em Alta</h3>
+                    <span className="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">12.31</span>
+                </div>
+                 <div className="p-3 flex-1 flex flex-col gap-3">
+                    {[
+                        { team: 'SC Braga', market: 'Resultado Final', odds: 1.45, info: 'SC Braga - Alverca' },
+                        { team: 'Juventude-RS', market: 'Resultado Final', odds: 1.38, info: 'Juventude - Monsoon FC' },
+                        { team: 'Sim', market: 'Ambos Marcam', odds: 2.05, info: 'Internacional - Grêmio' },
+                        { team: 'Sim', market: 'Ambos Marcam', odds: 2.07, info: 'Santa Cruz - Náutico' },
+                        { team: 'Chapecoense', market: 'Resultado Final', odds: 1.45, info: 'Chapecoense - Joinville' },
+                    ].map((item, i) => (
+                        <div key={i} className="flex justify-between items-center bg-primary/50 p-2 rounded border border-white/5">
+                             <div className="flex flex-col gap-1">
+                                <div className="flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                                    <span className="font-bold text-sm text-white">{item.team}</span>
+                                </div>
+                                <span className="text-xs text-text-muted">{item.market}</span>
+                                <span className="text-[10px] text-text-muted">{item.info}</span>
+                            </div>
+                            <div className="bg-white text-black font-bold px-2 py-1 rounded text-sm min-w-[50px] text-center">
+                                {item.odds}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+                <div className="p-3 mt-auto border-t border-border-custom">
+                    <button className="w-full bg-white/10 hover:bg-white/20 text-white font-bold py-3 rounded-lg transition-colors flex justify-center items-center gap-2">
+                        ADICIONAR AO CUPOM <span className="text-accent-gold">» 12.31</span>
+                    </button>
+                </div>
+            </div>
+        </div>
       </div>
     </div>
   );
