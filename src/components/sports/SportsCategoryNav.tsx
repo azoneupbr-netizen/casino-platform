@@ -35,36 +35,36 @@ export default function SportsCategoryNav({ selectedSport, onSelectSport }: Spor
 
       {/* Navigation List */}
       <div className="w-full overflow-x-auto scrollbar-hide">
-        <div className="flex min-w-full px-2 gap-2">
+        <div className="flex min-w-full px-2 gap-1">
           {sports.map((sport) => {
             const isSelected = selectedSport === sport.id;
             return (
               <button
                 key={sport.id}
                 onClick={() => onSelectSport(sport.id)}
-                className={`group flex-1 flex flex-col items-center justify-center gap-2 p-3 min-w-[100px] rounded-xl transition-all duration-300 relative ${
-                  isSelected
-                    ? 'bg-gradient-to-b from-gray-800 to-black border border-accent-gold shadow-lg shadow-accent-gold/20'
-                    : 'bg-gray-900/50 hover:bg-gray-800 border border-transparent hover:border-gray-700'
-                }`}
+                className="group flex-1 flex flex-col items-center justify-center gap-1 py-2 min-w-[70px] transition-all duration-300 relative"
               >
-                {/* Icon - Emoji for realism */}
-                <div className={`text-3xl transition-transform duration-300 ${isSelected ? 'scale-110' : 'group-hover:scale-110'}`}>
+                {/* Icon - Realistic Emoji, Dimmed by default */}
+                <div className={`text-2xl transition-all duration-300 filter ${
+                  isSelected 
+                    ? 'opacity-100 grayscale-0 scale-110' 
+                    : 'opacity-40 grayscale hover:opacity-100 hover:grayscale-0 hover:scale-110'
+                }`}>
                   {sport.icon}
                 </div>
 
-                {/* Name - Prominent */}
-                <span className={`text-xs font-bold uppercase tracking-wider whitespace-nowrap ${
+                {/* Name - Smaller, prominent */}
+                <span className={`text-[10px] font-bold uppercase tracking-wider whitespace-nowrap transition-colors duration-300 ${
                   isSelected 
                     ? 'text-accent-gold' 
-                    : 'text-gray-400 group-hover:text-white'
+                    : 'text-text-muted group-hover:text-white'
                 }`}>
                   {sport.name}
                 </span>
                 
-                {/* Active Indicator */}
+                {/* Active Indicator - Subtle glow */}
                 {isSelected && (
-                  <div className="absolute -bottom-1 w-1/3 h-1 bg-accent-gold rounded-full shadow-[0_0_10px_rgba(204,255,0,0.5)]" />
+                  <div className="absolute bottom-0 w-8 h-0.5 bg-accent-gold rounded-full shadow-[0_0_8px_rgba(204,255,0,0.8)]" />
                 )}
               </button>
             );
