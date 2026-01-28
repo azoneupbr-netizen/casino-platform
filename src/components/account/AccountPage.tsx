@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { api } from '../../services/api';
+import { authService } from '../../services/auth';
 
 export default function AccountPage() {
   const router = useRouter();
@@ -42,19 +43,40 @@ export default function AccountPage() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleSaveProfile = () => {
-    alert('Perfil atualizado com sucesso!');
+  const handleSaveProfile = async () => {
+    try {
+      setLoading(true);
+      await authService.updateProfile({ name, phone });
+      alert('Perfil atualizado com sucesso!');
+    } catch (error: any) {
+      console.error('Erro ao atualizar perfil:', error);
+      const errorMessage = error.response?.data?.message || error.response?.data?.error || error.message || 'Erro desconhecido';
+      alert(`Erro ao atualizar perfil: ${errorMessage}`);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleChangePassword = () => {
+  const handleChangePassword = async () => {
     if (newPassword !== confirmPassword) {
       alert('As senhas não coincidem!');
       return;
     }
-    alert('Senha alterada com sucesso!');
-    setCurrentPassword('');
-    setNewPassword('');
-    setConfirmPassword('');
+    
+    try {
+      setLoading(true);
+      await authService.updatePassword({ currentPassword, newPassword });
+      alert('Senha alterada com sucesso!');
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (error: any) {
+      console.error('Erro ao alterar senha:', error);
+      const errorMessage = error.response?.data?.message || error.response?.data?.error || error.message || 'Erro desconhecido';
+      alert(`Erro ao alterar senha: ${errorMessage}`);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
