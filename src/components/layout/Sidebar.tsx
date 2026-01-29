@@ -121,7 +121,7 @@ export default function Sidebar() {
       {/* Seção de Recompensas */}
       <div className="py-2 mb-2">
          <Link
-            href="/benefits"
+            href="/rewards"
             className="flex items-center gap-3 px-4 py-3 bg-accent-primary/5 hover:bg-accent-primary/10 border-l-4 border-transparent hover:border-accent-primary transition-all group"
             title={!isExpanded ? 'Benefícios' : ''}
           >
