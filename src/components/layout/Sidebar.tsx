@@ -118,6 +118,26 @@ export default function Sidebar() {
     >
       {isExpanded && <AnimatedBanner variant="sidebar" />}
 
+      {/* Seção de Recompensas */}
+      <div className="py-2 mb-2">
+         <Link
+            href="/benefits"
+            className="flex items-center gap-3 px-4 py-3 bg-accent-primary/5 hover:bg-accent-primary/10 border-l-4 border-transparent hover:border-accent-primary transition-all group"
+            title={!isExpanded ? 'Benefícios' : ''}
+          >
+            <span className="text-2xl group-hover:scale-110 transition-transform min-w-[2rem] text-center text-accent-primary">
+              🎁
+            </span>
+            {isExpanded && (
+              <span className="text-sm font-bold text-accent-primary flex-1 whitespace-nowrap">
+                Benefícios & Bônus
+              </span>
+            )}
+          </Link>
+      </div>
+
+      <div className="border-t border-border-custom my-2"></div>
+
       {/* Seção de Esportes */}
       <div className="py-4">
         {isExpanded && (
