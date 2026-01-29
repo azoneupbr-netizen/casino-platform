@@ -45,6 +45,7 @@ export interface Bet {
 }
 
 import { api } from '../../services/api';
+import { useToast } from '../../contexts/ToastContext';
 
 export interface BetSlipProps {
   bets: Bet[];
@@ -57,6 +58,7 @@ export interface BetSlipProps {
 }
 
 export default function BetSlip({ bets, onRemoveBet, onClearBets, className = '', onHeaderClick, isOpen = true, expandOnHover = false }: BetSlipProps) {
+  const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState<'simples' | 'multipla' | 'sistema'>('simples');
   const [stake, setStake] = useState<number>(10);
   const [oddChanged, setOddChanged] = useState<string | null>(null);
@@ -104,11 +106,11 @@ export default function BetSlip({ bets, onRemoveBet, onClearBets, className = ''
         await api.post('/bets', payload);
         
         // Success
-        alert('Aposta realizada com sucesso!');
+        showToast('Aposta realizada com sucesso!', 'success');
         onClearBets();
     } catch (error) {
         console.error('Erro ao realizar aposta:', error);
-        alert('Erro ao realizar aposta. Tente novamente.');
+        showToast('Erro ao realizar aposta. Tente novamente.', 'error');
     } finally {
         setLoading(false);
     }

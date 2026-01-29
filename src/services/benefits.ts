@@ -5,6 +5,7 @@ export interface BenefitStatus {
   amount: number;
   claimed?: boolean;
   period?: string;
+  availableInDays?: number;
 }
 
 export interface BenefitsResponse {
@@ -16,16 +17,42 @@ export interface BenefitsResponse {
 export type BenefitType = 'DAILY_CASHBACK' | 'WEEKLY_BONUS' | 'RAKEBACK';
 
 // Dados mockados para desenvolvimento/fallback
+// Função para calcular dias restantes até segunda-feira
+const getDaysUntilMonday = () => {
+  const today = new Date();
+  const day = today.getDay(); // 0=Sun, 1=Mon, ..., 4=Thu
+  // Se hoje é segunda (1), retorna 0 (disponível) ou 7?
+  // A lógica do backend diz que se é o dia, está disponível.
+  // Se não é, calcula dias.
+  if (day === 1) return 0;
+  
+  const days = (1 - day + 7) % 7;
+  return days === 0 ? 7 : days;
+};
+
 const MOCK_BENEFITS: BenefitsResponse = {
   daily: { available: true, amount: 12.50, claimed: false },
-  weekly: { available: false, amount: 0, period: '3 dias' },
+  weekly: { 
+    available: false, 
+    amount: 0, 
+    period: 'mock-week',
+    availableInDays: getDaysUntilMonday()
+  },
   rakeback: { available: true, amount: 45.30 }
 };
 
 const getStoredMock = () => {
   if (typeof window === 'undefined') return { ...MOCK_BENEFITS };
   const stored = localStorage.getItem('benefits_mock_state');
-  return stored ? JSON.parse(stored) : { ...MOCK_BENEFITS };
+  if (stored) {
+    const parsed = JSON.parse(stored);
+    // Atualiza o cálculo de dias dinamicamente mesmo se recuperar do storage
+    if (parsed.weekly) {
+      parsed.weekly.availableInDays = getDaysUntilMonday();
+    }
+    return parsed;
+  }
+  return { ...MOCK_BENEFITS };
 };
 
 const saveStoredMock = (state: BenefitsResponse) => {

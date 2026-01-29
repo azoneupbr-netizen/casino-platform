@@ -8,6 +8,7 @@ import Footer from "@/components/layout/Footer";
 import BottomNavigation from "@/components/layout/BottomNavigation";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { ToastProvider } from "@/contexts/ToastContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,6 +37,7 @@ export default function RootLayout({
       >
         <AuthProvider>
         <ThemeProvider>
+        <ToastProvider>
           <TopBanner />
           <Header />
           <div className="flex min-h-[calc(100vh-5rem)] relative">
@@ -48,6 +50,7 @@ export default function RootLayout({
             </main>
           </div>
           <BottomNavigation />
+        </ToastProvider>
         </ThemeProvider>
         </AuthProvider>
       </body>

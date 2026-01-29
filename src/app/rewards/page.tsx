@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { benefitsService, BenefitsResponse, BenefitType } from '@/services/benefits';
 import { Loader2 } from 'lucide-react';
-import Toast, { ToastType } from '@/components/ui/Toast';
+import { useToast } from '@/contexts/ToastContext';
 
 export default function RewardsPage() {
   const currentLevel = "MEMBRO BRAND";
@@ -17,20 +17,8 @@ export default function RewardsPage() {
   const [claiming, setClaiming] = useState<BenefitType | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // Estado para notificações (Toast)
-  const [toast, setToast] = useState<{ message: string; type: ToastType; isVisible: boolean }>({
-    message: '',
-    type: 'success',
-    isVisible: false
-  });
-
-  const showToast = (message: string, type: ToastType) => {
-    setToast({ message, type, isVisible: true });
-  };
-
-  const hideToast = () => {
-    setToast(prev => ({ ...prev, isVisible: false }));
-  };
+  // Hook de notificações
+  const { showToast } = useToast();
 
   const fetchBenefits = async () => {
     try {
@@ -91,12 +79,6 @@ export default function RewardsPage() {
 
   return (
     <div className="min-h-screen bg-[#0B1622] pt-24 px-6 pb-20">
-      <Toast 
-        message={toast.message} 
-        type={toast.type} 
-        isVisible={toast.isVisible} 
-        onClose={hideToast} 
-      />
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex flex-col md:flex-row items-center justify-between mb-10 gap-6">
@@ -210,6 +192,7 @@ export default function RewardsPage() {
                     {claiming === 'WEEKLY_BONUS' ? 'Processando...' : 
                      benefits?.weekly.available ? 'Resgatar' : 
                      benefits?.weekly.claimed ? 'Já Resgatado' : 
+                     benefits?.weekly.availableInDays ? `Disponível em ${benefits.weekly.availableInDays} dias` :
                      benefits?.weekly.period ? `Disponível em ${benefits.weekly.period}` : 'Indisponível'}
                 </button>
             </div>

@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { api } from '../../services/api';
+import { useToast } from '../../contexts/ToastContext';
 
 interface Transaction {
   id: string;
@@ -12,6 +13,7 @@ interface Transaction {
 }
 
 export default function WalletPage() {
+  const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState<'deposit' | 'withdraw' | 'history'>('deposit');
   const [amount, setAmount] = useState<number>(50);
   const [pixKey, setPixKey] = useState('');
@@ -54,7 +56,7 @@ export default function WalletPage() {
       setStep('qrcode');
     } catch (error) {
       console.error('Erro ao criar depósito:', error);
-      alert('Erro ao processar depósito. Tente novamente.');
+      showToast('Erro ao processar depósito. Tente novamente.', 'error');
     } finally {
       setLoading(false);
     }
@@ -68,12 +70,12 @@ export default function WalletPage() {
         pixKey,
         pixKeyType: 'CPF' // Simplificação
       });
-      alert('Saque solicitado com sucesso!');
+      showToast('Saque solicitado com sucesso!', 'success');
       setAmount(50);
       setPixKey('');
     } catch (error) {
       console.error('Erro ao solicitar saque:', error);
-      alert('Erro ao processar saque. Verifique o saldo ou tente novamente.');
+      showToast('Erro ao processar saque. Verifique o saldo ou tente novamente.', 'error');
     } finally {
       setLoading(false);
     }

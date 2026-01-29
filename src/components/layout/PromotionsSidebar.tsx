@@ -1,5 +1,7 @@
 'use client';
 import React from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useRouter } from 'next/navigation';
 
 interface PromotionsSidebarProps {
   isOpen: boolean;
@@ -8,6 +10,9 @@ interface PromotionsSidebarProps {
 }
 
 export default function PromotionsSidebar({ isOpen, onClose, onLogin }: PromotionsSidebarProps) {
+  const { isAuthenticated, user } = useAuth();
+  const router = useRouter();
+
   if (!isOpen) return null;
 
   return (
@@ -32,16 +37,35 @@ export default function PromotionsSidebar({ isOpen, onClose, onLogin }: Promotio
             {/* Login CTA Box */}
             <div className="bg-gradient-to-r from-[#1A2C3D] to-[#0F1923] rounded-xl p-6 relative overflow-hidden border border-white/5">
                 <div className="relative z-10 w-2/3">
-                    <p className="text-gray-400 text-xs font-bold mb-1">Minhas últimas recompensas</p>
-                    <h3 className="text-white font-bold text-lg mb-4 leading-tight">
-                        Faça login para conferir suas recompensas!
-                    </h3>
-                    <button 
-                        onClick={() => { onClose(); onLogin(); }}
-                        className="px-6 py-2 bg-[#2E3B4E] hover:bg-[#3A4B60] text-white text-sm font-bold rounded-lg transition-colors border border-white/10"
-                    >
-                        Entrar
-                    </button>
+                    {isAuthenticated ? (
+                        <>
+                            <p className="text-[#ccff00] text-xs font-bold mb-1">Área VIP</p>
+                            <h3 className="text-white font-bold text-lg mb-4 leading-tight">
+                                Olá, {user?.name?.split(' ')[0] || 'Jogador'}!
+                                <br/>
+                                <span className="text-sm font-normal text-gray-300">Confira seus bônus exclusivos.</span>
+                            </h3>
+                            <button 
+                                onClick={() => { onClose(); router.push('/rewards'); }}
+                                className="px-6 py-2 bg-[#ccff00] hover:bg-[#b3e600] text-black text-sm font-bold rounded-lg transition-colors shadow-lg"
+                            >
+                                Ver Meus Bônus
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            <p className="text-gray-400 text-xs font-bold mb-1">Minhas últimas recompensas</p>
+                            <h3 className="text-white font-bold text-lg mb-4 leading-tight">
+                                Faça login para conferir suas recompensas!
+                            </h3>
+                            <button 
+                                onClick={() => { onClose(); onLogin(); }}
+                                className="px-6 py-2 bg-[#2E3B4E] hover:bg-[#3A4B60] text-white text-sm font-bold rounded-lg transition-colors border border-white/10"
+                            >
+                                Entrar
+                            </button>
+                        </>
+                    )}
                 </div>
                 {/* Imagem de Presente 3D (Simulada) */}
                 <div className="absolute top-0 right-0 w-32 h-32 transform translate-x-4 -translate-y-2">

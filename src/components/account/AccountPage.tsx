@@ -3,9 +3,11 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { api } from '../../services/api';
 import { authService } from '../../services/auth';
+import { useToast } from '../../contexts/ToastContext';
 
 export default function AccountPage() {
   const router = useRouter();
+  const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState<'profile' | 'security' | 'verification'>('profile');
   
   // Profile State
@@ -47,11 +49,11 @@ export default function AccountPage() {
     try {
       setLoading(true);
       await authService.updateProfile({ name, phone });
-      alert('Perfil atualizado com sucesso!');
+      showToast('Perfil atualizado com sucesso!', 'success');
     } catch (error: any) {
       console.error('Erro ao atualizar perfil:', error);
       const errorMessage = error.response?.data?.message || error.response?.data?.error || error.message || 'Erro desconhecido';
-      alert(`Erro ao atualizar perfil: ${errorMessage}`);
+      showToast(`Erro ao atualizar perfil: ${errorMessage}`, 'error');
     } finally {
       setLoading(false);
     }
@@ -59,21 +61,21 @@ export default function AccountPage() {
 
   const handleChangePassword = async () => {
     if (newPassword !== confirmPassword) {
-      alert('As senhas não coincidem!');
+      showToast('As senhas não coincidem!', 'error');
       return;
     }
     
     try {
       setLoading(true);
       await authService.updatePassword({ currentPassword, newPassword });
-      alert('Senha alterada com sucesso!');
+      showToast('Senha alterada com sucesso!', 'success');
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
     } catch (error: any) {
       console.error('Erro ao alterar senha:', error);
       const errorMessage = error.response?.data?.message || error.response?.data?.error || error.message || 'Erro desconhecido';
-      alert(`Erro ao alterar senha: ${errorMessage}`);
+      showToast(`Erro ao alterar senha: ${errorMessage}`, 'error');
     } finally {
       setLoading(false);
     }

@@ -1,6 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import { api } from '../../services/api';
+import { useToast } from '../../contexts/ToastContext';
 
 interface DepositModalProps {
   isOpen: boolean;
@@ -8,6 +9,7 @@ interface DepositModalProps {
 }
 
 export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
+  const { showToast } = useToast();
   const [amount, setAmount] = useState<number>(50);
   const [paymentMethod, setPaymentMethod] = useState<'pay2free' | 'pixpaag'>('pay2free');
   const [loading, setLoading] = useState(false);
@@ -32,7 +34,7 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
       });
     } catch (error) {
       console.error('Erro ao criar depósito:', error);
-      alert('Erro ao processar depósito. Tente novamente.');
+      showToast('Erro ao processar depósito. Tente novamente.', 'error');
     } finally {
       setLoading(false);
     }
@@ -42,18 +44,18 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
     if (!pixData) return;
     try {
       await api.post(`/payments/test/confirm/${pixData.externalId}`);
-      alert('Pagamento confirmado com sucesso!');
+      showToast('Pagamento confirmado com sucesso!', 'success');
       onClose();
     } catch (error) {
       console.error('Erro ao simular pagamento:', error);
-      alert('Erro ao confirmar pagamento.');
+      showToast('Erro ao confirmar pagamento.', 'error');
     }
   };
 
   const copyToClipboard = () => {
     if (pixData?.qrCode) {
       navigator.clipboard.writeText(pixData.qrCode);
-      alert('Código Pix copiado!');
+      showToast('Código Pix copiado!', 'success');
     }
   };
 

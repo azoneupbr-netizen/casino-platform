@@ -12,16 +12,9 @@ export default function SupportModal({ isOpen, onClose }: SupportModalProps) {
     { text: 'Olá! Como posso ajudar você hoje?', isUser: false, time: 'Agora' }
   ]);
 
-  // Prevent scrolling when modal is open
+  // Prevent scrolling removed to allow interaction while chat is open
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
+    // No body lock
   }, [isOpen]);
 
   if (!isOpen) return null;
@@ -46,25 +39,23 @@ export default function SupportModal({ isOpen, onClose }: SupportModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity" onClick={onClose} />
+    <div className="fixed bottom-4 right-4 z-[1000] w-full max-w-[380px] flex flex-col items-end pointer-events-none">
       
-      <div className="relative bg-[#101D2C] border border-slate-800 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col h-[600px] animate-in fade-in zoom-in duration-200">
+      <div className="bg-[#101D2C] border border-slate-800 rounded-t-2xl rounded-bl-2xl w-full shadow-2xl overflow-hidden flex flex-col h-[500px] animate-in slide-in-from-bottom-5 fade-in duration-300 pointer-events-auto">
         {/* Header */}
-        <div className="bg-[#0B1622] p-4 border-b border-slate-800 flex justify-between items-center">
+        <div className="bg-[#0B1622] p-4 border-b border-slate-800 flex justify-between items-center cursor-pointer" onClick={onClose}>
             <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-[#ccff00] flex items-center justify-center text-black font-bold text-xl">
+                <div className="w-10 h-10 rounded-full bg-[#ccff00] flex items-center justify-center text-black font-bold text-xl relative">
                     🎧
+                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-[#0B1622] rounded-full"></span>
                 </div>
                 <div>
-                    <h3 className="font-bold text-white">Suporte ao Vivo</h3>
-                    <p className="text-xs text-green-500 flex items-center gap-1">
-                        <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Online
-                    </p>
+                    <h3 className="font-bold text-white text-sm">Suporte ao Vivo</h3>
+                    <p className="text-[10px] text-slate-400">Tempo de resposta: ~2 min</p>
                 </div>
             </div>
-            <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors p-2">
-                ✕
+            <button onClick={(e) => { e.stopPropagation(); onClose(); }} className="text-slate-400 hover:text-white transition-colors p-2 rounded-lg hover:bg-white/5">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m18 15-6-6-6 6"/></svg>
             </button>
         </div>
 
