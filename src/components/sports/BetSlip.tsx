@@ -37,11 +37,14 @@ const GameIcons = {
 
 export interface Bet {
   id: string;
+  matchId?: number; // Optional because id is already string, but we need the numeric ID for backend
   eventName: string;
   betType: string;
   odd: number;
   selection: string; // Ex: "Real Madrid"
 }
+
+import { api } from '../../services/api';
 
 export interface BetSlipProps {
   bets: Bet[];
@@ -61,6 +64,55 @@ export default function BetSlip({ bets, onRemoveBet, onClearBets, className = ''
   const [oddsOption, setOddsOption] = useState<'any' | 'higher' | 'none'>('higher');
   const [quickBet, setQuickBet] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [individualStakes, setIndividualStakes] = useState<{[key: string]: number}>({});
+  const [loading, setLoading] = useState(false);
+
+  // Initialize individual stakes
+  useEffect(() => {
+    setIndividualStakes(prev => {
+        const newStakes = { ...prev };
+        bets.forEach(bet => {
+            if (newStakes[bet.id] === undefined) {
+                newStakes[bet.id] = 10; // Default stake
+            }
+        });
+        return newStakes;
+    });
+  }, [bets]);
+
+  const handlePlaceBet = async () => {
+    if (bets.length === 0) return;
+    setLoading(true);
+
+    try {
+        const payload = {
+            type: activeTab,
+            bets: bets.map(bet => ({
+                matchId: bet.matchId,
+                selection: bet.selection,
+                odd: bet.odd,
+                amount: activeTab === 'simples' ? (individualStakes[bet.id] || 10) : (stake / bets.length),
+                marketType: bet.betType // Pass market type if needed
+            })),
+            totalStake: activeTab === 'simples' 
+                ? bets.reduce((acc, bet) => acc + (individualStakes[bet.id] || 10), 0)
+                : stake
+        };
+
+        // Adjust payload structure based on backend requirements
+        // Assuming backend expects an array of bets or a single "ticket"
+        await api.post('/bets', payload);
+        
+        // Success
+        alert('Aposta realizada com sucesso!');
+        onClearBets();
+    } catch (error) {
+        console.error('Erro ao realizar aposta:', error);
+        alert('Erro ao realizar aposta. Tente novamente.');
+    } finally {
+        setLoading(false);
+    }
+  };
 
   // Simulação de mudança de odd para efeito visual
   useEffect(() => {
@@ -194,6 +246,8 @@ export default function BetSlip({ bets, onRemoveBet, onClearBets, className = ''
                                 type="number" 
                                 className="w-full bg-[#101D2C] rounded border border-slate-700 text-right text-white text-sm py-1 px-2 focus:border-[#F5A623] outline-none"
                                 placeholder="Valor"
+                                value={individualStakes[bet.id] || ''}
+                                onChange={(e) => setIndividualStakes({...individualStakes, [bet.id]: parseFloat(e.target.value)})}
                             />
                         </div>
                     )}
@@ -215,10 +269,18 @@ export default function BetSlip({ bets, onRemoveBet, onClearBets, className = ''
             </div>
             <div className="flex justify-between items-center text-sm">
                 <span className="text-text-muted">Retorno Potencial</span>
-                <span className="text-white font-bold">R$ {(stake * bets.reduce((acc, bet) => activeTab === 'multipla' ? acc * bet.odd : acc + bet.odd, activeTab === 'multipla' ? 1 : 0)).toFixed(2)}</span>
+                <span className="text-white font-bold">R$ {
+                    activeTab === 'multipla' 
+                    ? (stake * bets.reduce((acc, bet) => acc * bet.odd, 1)).toFixed(2)
+                    : bets.reduce((acc, bet) => acc + ((individualStakes[bet.id] || 0) * bet.odd), 0).toFixed(2)
+                }</span>
             </div>
-            <button className="w-full bg-accent-gold hover:bg-yellow-500 text-primary font-bold py-3 rounded-lg shadow-lg transition-all transform active:scale-95">
-                APOSTAR
+            <button 
+                onClick={handlePlaceBet}
+                disabled={loading}
+                className="w-full bg-accent-gold hover:bg-yellow-500 text-primary font-bold py-3 rounded-lg shadow-lg transition-all transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+                {loading ? 'PROCESSANDO...' : 'APOSTAR'}
             </button>
         </div>
       )}

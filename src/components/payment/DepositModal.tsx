@@ -1,5 +1,6 @@
 'use client';
 import React, { useState } from 'react';
+import { api } from '../../services/api';
 
 interface DepositModalProps {
   isOpen: boolean;
@@ -9,10 +10,52 @@ interface DepositModalProps {
 export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
   const [amount, setAmount] = useState<number>(50);
   const [paymentMethod, setPaymentMethod] = useState<'pay2free' | 'pixpaag'>('pay2free');
+  const [loading, setLoading] = useState(false);
+  const [pixData, setPixData] = useState<{ qrCode: string; qrCodeUrl: string; externalId: string } | null>(null);
   
   if (!isOpen) return null;
 
   const quickAmounts = [20, 50, 100, 250, 500, 1000];
+
+  const handleDeposit = async () => {
+    setLoading(true);
+    try {
+      const res = await api.post('/payments/deposit', {
+        amount,
+        currency: 'BRL',
+        provider: 'PIX'
+      });
+      setPixData({
+        qrCode: res.data.pixCode,
+        qrCodeUrl: res.data.pixQrCode,
+        externalId: res.data.externalId
+      });
+    } catch (error) {
+      console.error('Erro ao criar depósito:', error);
+      alert('Erro ao processar depósito. Tente novamente.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSimulatePayment = async () => {
+    if (!pixData) return;
+    try {
+      await api.post(`/payments/test/confirm/${pixData.externalId}`);
+      alert('Pagamento confirmado com sucesso!');
+      onClose();
+    } catch (error) {
+      console.error('Erro ao simular pagamento:', error);
+      alert('Erro ao confirmar pagamento.');
+    }
+  };
+
+  const copyToClipboard = () => {
+    if (pixData?.qrCode) {
+      navigator.clipboard.writeText(pixData.qrCode);
+      alert('Código Pix copiado!');
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
@@ -46,6 +89,52 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
         </div>
 
         <div className="p-6">
+            {pixData ? (
+                <div className="flex flex-col items-center animate-fade-in">
+                    <h2 className="text-white font-bold text-xl mb-6">Pagamento via Pix</h2>
+                    <div className="bg-white p-4 rounded-xl mb-6 shadow-lg">
+                         {/* eslint-disable-next-line @next/next/no-img-element */}
+                         <img src={pixData.qrCodeUrl} alt="QR Code Pix" className="w-56 h-56" />
+                    </div>
+                    <div className="w-full mb-6">
+                        <label className="text-gray-400 text-xs font-bold mb-2 block uppercase">Código Pix Copia e Cola</label>
+                        <div className="flex gap-2">
+                            <input 
+                                readOnly 
+                                value={pixData.qrCode} 
+                                className="flex-1 bg-[#1e1e1e] border border-gray-700 rounded-lg p-3 text-white text-sm font-mono truncate"
+                            />
+                            <button 
+                                onClick={copyToClipboard}
+                                className="bg-[#ccff00] text-black font-bold px-4 rounded-lg hover:bg-[#b3e600] transition-colors"
+                            >
+                                COPIAR
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div className="w-full bg-[#1e1e1e] border border-dashed border-gray-700 rounded-lg p-4 mb-6 text-center">
+                        <p className="text-gray-300 text-sm">
+                            Valor a pagar: <span className="text-[#ccff00] font-bold text-lg">R$ {amount.toFixed(2)}</span>
+                        </p>
+                    </div>
+
+                    <button 
+                        onClick={handleSimulatePayment}
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg mb-4 shadow-lg transition-all"
+                    >
+                        SIMULAR PAGAMENTO APROVADO
+                    </button>
+
+                    <button 
+                        onClick={() => setPixData(null)}
+                        className="text-gray-500 hover:text-white text-sm font-medium transition-colors"
+                    >
+                        Voltar
+                    </button>
+                </div>
+            ) : (
+                <>
             {/* Header com Voltar */}
             <div className="flex items-center gap-3 mb-6">
                 <button className="text-gray-400 hover:text-white">
@@ -133,9 +222,15 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
             </div>
 
             {/* Botão de Ação */}
-            <button className="w-full bg-gradient-to-b from-[#ccff00] to-[#99cc00] hover:from-[#b3e600] hover:to-[#88b300] text-black font-black py-4 rounded-lg text-lg shadow-[0_0_20px_rgba(204,255,0,0.3)] hover:shadow-[0_0_30px_rgba(204,255,0,0.5)] transition-all transform hover:scale-[1.02]">
-                DEPOSITAR
+            <button 
+                onClick={handleDeposit}
+                disabled={loading}
+                className="w-full bg-gradient-to-b from-[#ccff00] to-[#99cc00] hover:from-[#b3e600] hover:to-[#88b300] text-black font-black py-4 rounded-lg text-lg shadow-[0_0_20px_rgba(204,255,0,0.3)] hover:shadow-[0_0_30px_rgba(204,255,0,0.5)] transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+                {loading ? 'PROCESSANDO...' : 'DEPOSITAR'}
             </button>
+            </>
+        )}
         </div>
       </div>
     </div>

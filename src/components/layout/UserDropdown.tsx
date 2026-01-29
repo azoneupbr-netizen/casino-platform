@@ -6,9 +6,10 @@ interface UserDropdownProps {
     onClose: () => void;
     onLogout: () => void;
     onSupportClick: () => void;
+    user: any;
 }
 
-export default function UserDropdown({ isOpen, onClose, onLogout, onSupportClick }: UserDropdownProps) {
+export default function UserDropdown({ isOpen, onClose, onLogout, onSupportClick, user }: UserDropdownProps) {
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -35,11 +36,11 @@ export default function UserDropdown({ isOpen, onClose, onLogout, onSupportClick
             <div className="bg-[#1e2330] p-4 text-white">
                 <div className="flex items-center gap-3 mb-3">
                     <div className="w-12 h-12 rounded-full bg-yellow-400 overflow-hidden border-2 border-white/20">
-                         <img src="https://api.dicebear.com/9.x/avataaars/svg?seed=Felix" alt="Avatar" className="w-full h-full object-cover" />
+                         <img src={`https://api.dicebear.com/9.x/avataaars/svg?seed=${user?.email || 'User'}`} alt="Avatar" className="w-full h-full object-cover" />
                     </div>
                     <div>
-                        <h3 className="font-bold text-lg leading-tight">Brand Medvediev</h3>
-                        <p className="text-xs text-gray-400">ID: 87439201</p>
+                        <h3 className="font-bold text-lg leading-tight">{user?.name || user?.email?.split('@')[0] || 'Usuário'}</h3>
+                        <p className="text-xs text-gray-400">ID: {user?.id?.substring(0, 8) || '...'}</p>
                     </div>
                 </div>
                 

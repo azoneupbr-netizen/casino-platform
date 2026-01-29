@@ -1,9 +1,11 @@
 'use client';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { api } from '../../services/api';
 
 export interface Match {
   id: number;
   league: string;
+  sport?: string; // Field might be present in API
   homeTeam: string;
   awayTeam: string;
   time: string;
@@ -26,161 +28,56 @@ export interface Match {
   awayIcon: string;
 }
 
-const matches: Match[] = [
-  {
-    id: 1,
-    league: 'Premier League',
-    homeTeam: 'Manchester City',
-    awayTeam: 'Liverpool',
-    time: "AO VIVO 45'",
-    score: '1 - 1',
-    isLive: true,
-    odds: { 
-        home: 2.10, draw: 3.50, away: 3.20,
-        over25: 1.65, under25: 2.10,
-        bothScoreYes: 1.50, bothScoreNo: 2.40,
-        doubleChance1X: 1.30, doubleChanceX2: 1.55, doubleChance12: 1.25
-    },
-    homeIcon: '🔵',
-    awayIcon: '🔴'
-  },
-  {
-    id: 2,
-    league: 'La Liga',
-    homeTeam: 'Real Madrid',
-    awayTeam: 'Barcelona',
-    time: '16:00',
-    score: null,
-    isLive: false,
-    odds: { 
-        home: 1.95, draw: 3.80, away: 3.50,
-        over25: 1.70, under25: 2.05,
-        bothScoreYes: 1.60, bothScoreNo: 2.20,
-        doubleChance1X: 1.25, doubleChanceX2: 1.60, doubleChance12: 1.22
-    },
-    homeIcon: '⚪',
-    awayIcon: '🔵'
-  },
-  {
-    id: 3,
-    league: 'Brasileirão Série A',
-    homeTeam: 'Flamengo',
-    awayTeam: 'Palmeiras',
-    time: '18:30',
-    score: null,
-    isLive: false,
-    odds: { 
-        home: 2.30, draw: 3.10, away: 2.90,
-        over25: 2.00, under25: 1.75,
-        bothScoreYes: 1.80, bothScoreNo: 1.90,
-        doubleChance1X: 1.35, doubleChanceX2: 1.50, doubleChance12: 1.30
-    },
-    homeIcon: '🔴',
-    awayIcon: '🟢'
-  },
-  {
-    id: 4,
-    league: 'Serie A Itália',
-    homeTeam: 'Juventus',
-    awayTeam: 'Milan',
-    time: "AO VIVO 12'",
-    score: '0 - 0',
-    isLive: true,
-    odds: { 
-        home: 2.50, draw: 3.00, away: 2.80,
-        over25: 2.20, under25: 1.60,
-        bothScoreYes: 1.95, bothScoreNo: 1.75,
-        doubleChance1X: 1.40, doubleChanceX2: 1.45, doubleChance12: 1.35
-    },
-    homeIcon: '🦓',
-    awayIcon: '👹'
-  },
-  {
-    id: 5,
-    league: 'Champions League',
-    homeTeam: 'Bayern Munich',
-    awayTeam: 'PSG',
-    time: '20:45',
-    score: null,
-    isLive: false,
-    odds: { 
-        home: 1.80, draw: 4.00, away: 3.90,
-        over25: 1.45, under25: 2.60,
-        bothScoreYes: 1.40, bothScoreNo: 2.70,
-        doubleChance1X: 1.18, doubleChanceX2: 1.80, doubleChance12: 1.20
-    },
-    homeIcon: '🔴',
-    awayIcon: '🔵'
-  },
-  {
-    id: 6,
-    league: 'NBA',
-    homeTeam: 'Lakers',
-    awayTeam: 'Warriors',
-    time: "AO VIVO Q3",
-    score: '89 - 88',
-    isLive: true,
-    odds: { 
-        home: 1.85, draw: 12.0, away: 1.95,
-        over25: 1.90, under25: 1.90,
-        bothScoreYes: 1.05, bothScoreNo: 8.00,
-        doubleChance1X: 1.0, doubleChanceX2: 1.0, doubleChance12: 1.0
-    },
-    homeIcon: '🏀',
-    awayIcon: '🌉'
-  },
-  {
-    id: 7,
-    league: 'Tênis ATP',
-    homeTeam: 'Alcaraz',
-    awayTeam: 'Djokovic',
-    time: "AO VIVO Set 2",
-    score: '1 - 0 (4-3)',
-    isLive: true,
-    odds: { 
-        home: 1.70, draw: 0, away: 2.10,
-        over25: 1.85, under25: 1.95,
-        bothScoreYes: 0, bothScoreNo: 0,
-        doubleChance1X: 0, doubleChanceX2: 0, doubleChance12: 0
-    },
-    homeIcon: '🇪🇸',
-    awayIcon: '🇷🇸'
-  },
-  {
-    id: 8,
-    league: 'CS2 Major',
-    homeTeam: 'Furia',
-    awayTeam: 'NaVi',
-    time: "AO VIVO Map 1",
-    score: '11 - 9',
-    isLive: true,
-    odds: { 
-        home: 2.20, draw: 0, away: 1.60,
-        over25: 1.80, under25: 1.90,
-        bothScoreYes: 0, bothScoreNo: 0,
-        doubleChance1X: 0, doubleChanceX2: 0, doubleChance12: 0
-    },
-    homeIcon: '🇧🇷',
-    awayIcon: '🇺🇦'
-  }
-];
-
 import { Bet } from './BetSlip';
 
 interface SportsFeedProps {
   onAddBet: (bet: Omit<Bet, 'id'>) => void;
   onMatchSelect: (match: Match) => void;
   bets?: Bet[];
+  selectedSport?: string;
 }
 
-export default function SportsFeed({ onAddBet, onMatchSelect, bets = [] }: SportsFeedProps) {
-  const [selectedMarket, setSelectedMarket] = React.useState('winner'); // winner, overUnder, bothScore, doubleChance
+export default function SportsFeed({ onAddBet, onMatchSelect, bets = [], selectedSport = 'futebol' }: SportsFeedProps) {
+  const [selectedMarket, setSelectedMarket] = useState('winner'); // winner, overUnder, bothScore, doubleChance
+  const [matches, setMatches] = useState<Match[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchMatches();
+  }, [selectedSport]);
+
+  const fetchMatches = async () => {
+    setLoading(true);
+    try {
+      // Ajuste o endpoint para a rota correta da API
+      const res = await api.get('/sports/matches');
+      let data = res.data;
+      
+      // Filter by sport if available in data
+      if (selectedSport && selectedSport !== 'todos') {
+          // Normalize sport names for comparison if needed
+          data = data.filter((m: Match) => {
+              if (!m.sport) return true; // If no sport field, show it (or hide it?) - safer to show for now
+              return m.sport.toLowerCase() === selectedSport.toLowerCase();
+          });
+      }
+      
+      setMatches(data);
+    } catch (error) {
+      console.error('Erro ao buscar jogos:', error);
+      // Mantém lista vazia se falhar
+      setMatches([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleBetClick = (match: Match, selection: string, odd: number, type: string) => {
       const isSelected = bets.some(b => b.eventName === `${match.homeTeam} vs ${match.awayTeam}` && b.selection === selection);
       
       if (!isSelected) {
           onAddBet({
+              matchId: match.id,
               eventName: `${match.homeTeam} vs ${match.awayTeam}`,
               betType: type,
               odd: odd,
@@ -219,7 +116,24 @@ export default function SportsFeed({ onAddBet, onMatchSelect, bets = [] }: Sport
 
       {/* Lista de Jogos - Estilo Compacto/Linha */}
       <div className="bg-secondary rounded-xl border border-border-custom divide-y divide-border-custom overflow-hidden">
-        {matches.map((match) => (
+        {loading ? (
+            // Skeleton Loader
+            [1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className="p-3 flex items-center gap-4 animate-pulse">
+                    <div className="w-12 h-8 bg-white/5 rounded"></div>
+                    <div className="flex-1 flex flex-col gap-2">
+                        <div className="h-4 bg-white/5 rounded w-1/3"></div>
+                        <div className="h-4 bg-white/5 rounded w-1/4"></div>
+                    </div>
+                    <div className="w-1/3 h-8 bg-white/5 rounded"></div>
+                </div>
+            ))
+        ) : matches.length === 0 ? (
+            <div className="p-8 text-center text-text-muted">
+                Nenhum jogo disponível no momento.
+            </div>
+        ) : (
+            matches.map((match) => (
           <div 
             key={match.id}
             className="flex flex-col md:flex-row md:items-center p-3 hover:bg-white/5 transition-colors gap-4"
@@ -370,128 +284,82 @@ export default function SportsFeed({ onAddBet, onMatchSelect, bets = [] }: Sport
                 </button>
             </div>
           </div>
-        ))}
+        )))}
       </div>
 
       {/* Seção Múltiplas Populares */}
-      <div className="mt-8">
-        <div className="flex items-center gap-2 mb-4">
-           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-           </svg>
-           <h2 className="text-lg font-bold uppercase text-white tracking-wide">MÚLTIPLAS POPULARES</h2>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Column 1 */}
-            <div className="bg-secondary rounded-xl border border-border-custom overflow-hidden flex flex-col">
-                <div className="bg-[#1a1d26] p-3 flex justify-between items-center border-b border-border-custom">
-                    <h3 className="font-bold text-white">Acumuladores Populares</h3>
-                    <span className="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">34.26</span>
-                </div>
-                <div className="p-3 flex-1 flex flex-col gap-3">
-                    {[
-                        { team: 'Flamengo', market: 'Resultado Final', odds: 2.32, info: 'Fluminense - Flamengo' },
-                        { team: 'Corinthians', market: 'Resultado Final', odds: 1.83, info: 'Velo Clube SP - Corinthians' },
-                        { team: 'Cruzeiro', market: 'Resultado Final', odds: 2.65, info: 'Atlético-MG - Cruzeiro' },
-                        { team: 'Grêmio Novorizontino', market: 'Resultado Final', odds: 1.62, info: 'Grêmio - Botafogo-SP' },
-                        { team: 'Vasco da Gama', market: 'Resultado Final', odds: 1.88, info: 'Boavista-RJ - Vasco' },
-                    ].map((item, i) => (
-                        <div key={i} className="flex justify-between items-center bg-primary/50 p-2 rounded border border-white/5">
-                            <div className="flex flex-col gap-1">
-                                <div className="flex items-center gap-2">
-                                    <span className="w-2 h-2 rounded-full bg-accent-gold"></span>
-                                    <span className="font-bold text-sm text-white">{item.team}</span>
-                                </div>
-                                <span className="text-xs text-text-muted">{item.market}</span>
-                                <span className="text-[10px] text-text-muted">{item.info}</span>
-                            </div>
-                            <div className="bg-white text-black font-bold px-2 py-1 rounded text-sm min-w-[50px] text-center">
-                                {item.odds}
-                            </div>
-                        </div>
-                    ))}
-                </div>
-                <div className="p-3 mt-auto border-t border-border-custom">
-                    <button className="w-full bg-white/10 hover:bg-white/20 text-white font-bold py-3 rounded-lg transition-colors flex justify-center items-center gap-2">
-                        ADICIONAR AO CUPOM <span className="text-accent-gold">» 34.26</span>
-                    </button>
-                </div>
-            </div>
+      {matches.length >= 6 && (
+        <div className="mt-8">
+          <div className="flex items-center gap-2 mb-4">
+             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+             </svg>
+             <h2 className="text-lg font-bold uppercase text-white tracking-wide">MÚLTIPLAS POPULARES</h2>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Column 1 */}
+              <div className="bg-secondary rounded-xl border border-border-custom overflow-hidden flex flex-col">
+                  <div className="bg-[#1a1d26] p-3 flex justify-between items-center border-b border-border-custom">
+                      <h3 className="font-bold text-white">Tripla do Dia</h3>
+                      <span className="bg-accent-gold text-primary text-xs font-bold px-2 py-1 rounded">+10%</span>
+                  </div>
+                   <div className="p-3 flex-1 flex flex-col gap-3">
+                      {matches.slice(0, 3).map((match, i) => (
+                          <div key={i} className="flex justify-between items-center bg-primary/50 p-2 rounded border border-white/5">
+                               <div className="flex flex-col gap-1">
+                                  <div className="flex items-center gap-2">
+                                      <span className="w-2 h-2 rounded-full bg-accent-gold"></span>
+                                      <span className="font-bold text-sm text-white">{match.homeTeam}</span>
+                                  </div>
+                                  <span className="text-xs text-text-muted">Vencedor</span>
+                                  <span className="text-[10px] text-text-muted">{match.homeTeam} - {match.awayTeam}</span>
+                              </div>
+                              <div className="bg-white text-black font-bold px-2 py-1 rounded text-sm min-w-[50px] text-center">
+                                  {match.odds.home.toFixed(2)}
+                              </div>
+                          </div>
+                      ))}
+                  </div>
+                  <div className="p-3 mt-auto border-t border-border-custom">
+                      <button className="w-full bg-white/10 hover:bg-white/20 text-white font-bold py-3 rounded-lg transition-colors flex justify-center items-center gap-2">
+                          ADICIONAR AO CUPOM
+                      </button>
+                  </div>
+              </div>
 
-            {/* Column 2 */}
-            <div className="bg-secondary rounded-xl border border-border-custom overflow-hidden flex flex-col">
-                <div className="bg-[#1a1d26] p-3 flex justify-between items-center border-b border-border-custom">
-                    <h3 className="font-bold text-white">Bônus Acumulador</h3>
-                    <span className="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">+15%</span>
-                </div>
-                 <div className="p-3 flex-1 flex flex-col gap-3">
-                    {[
-                        { team: 'SC Braga', market: 'Resultado Final', odds: 1.45, info: 'SC Braga - Alverca' },
-                        { team: 'Boca Juniors', market: 'Resultado Final', odds: 1.62, info: 'Boca Juniors - Dep. Riestra' },
-                        { team: 'Al-Nassr FC', market: 'Resultado Final', odds: 1.31, info: 'Al-Nassr FC - Al-Taawoun' },
-                        { team: 'Argentinos Jrs', market: 'Resultado Final', odds: 1.45, info: 'Argentinos Jrs - Sarmiento' },
-                        { team: 'CA Tigre', market: 'Resultado Final', odds: 2.10, info: 'CA Tigre - Estudiantes' },
-                    ].map((item, i) => (
-                        <div key={i} className="flex justify-between items-center bg-primary/50 p-2 rounded border border-white/5">
-                             <div className="flex flex-col gap-1">
-                                <div className="flex items-center gap-2">
-                                    <span className="w-2 h-2 rounded-full bg-green-500"></span>
-                                    <span className="font-bold text-sm text-white">{item.team}</span>
-                                </div>
-                                <span className="text-xs text-text-muted">{item.market}</span>
-                                <span className="text-[10px] text-text-muted">{item.info}</span>
-                            </div>
-                            <div className="bg-white text-black font-bold px-2 py-1 rounded text-sm min-w-[50px] text-center">
-                                {item.odds}
-                            </div>
-                        </div>
-                    ))}
-                </div>
-                <div className="p-3 mt-auto border-t border-border-custom">
-                    <button className="w-full bg-white/10 hover:bg-white/20 text-white font-bold py-3 rounded-lg transition-colors flex justify-center items-center gap-2">
-                        ADICIONAR AO CUPOM <span className="text-accent-gold">» 9.37</span>
-                    </button>
-                </div>
-            </div>
-
-            {/* Column 3 */}
-            <div className="bg-secondary rounded-xl border border-border-custom overflow-hidden flex flex-col">
-                <div className="bg-[#1a1d26] p-3 flex justify-between items-center border-b border-border-custom">
-                    <h3 className="font-bold text-white">Seleções em Alta</h3>
-                    <span className="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">12.31</span>
-                </div>
-                 <div className="p-3 flex-1 flex flex-col gap-3">
-                    {[
-                        { team: 'SC Braga', market: 'Resultado Final', odds: 1.45, info: 'SC Braga - Alverca' },
-                        { team: 'Juventude-RS', market: 'Resultado Final', odds: 1.38, info: 'Juventude - Monsoon FC' },
-                        { team: 'Sim', market: 'Ambos Marcam', odds: 2.05, info: 'Internacional - Grêmio' },
-                        { team: 'Sim', market: 'Ambos Marcam', odds: 2.07, info: 'Santa Cruz - Náutico' },
-                        { team: 'Chapecoense', market: 'Resultado Final', odds: 1.45, info: 'Chapecoense - Joinville' },
-                    ].map((item, i) => (
-                        <div key={i} className="flex justify-between items-center bg-primary/50 p-2 rounded border border-white/5">
-                             <div className="flex flex-col gap-1">
-                                <div className="flex items-center gap-2">
-                                    <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-                                    <span className="font-bold text-sm text-white">{item.team}</span>
-                                </div>
-                                <span className="text-xs text-text-muted">{item.market}</span>
-                                <span className="text-[10px] text-text-muted">{item.info}</span>
-                            </div>
-                            <div className="bg-white text-black font-bold px-2 py-1 rounded text-sm min-w-[50px] text-center">
-                                {item.odds}
-                            </div>
-                        </div>
-                    ))}
-                </div>
-                <div className="p-3 mt-auto border-t border-border-custom">
-                    <button className="w-full bg-white/10 hover:bg-white/20 text-white font-bold py-3 rounded-lg transition-colors flex justify-center items-center gap-2">
-                        ADICIONAR AO CUPOM <span className="text-accent-gold">» 12.31</span>
-                    </button>
-                </div>
-            </div>
+              {/* Column 2 */}
+              <div className="bg-secondary rounded-xl border border-border-custom overflow-hidden flex flex-col">
+                  <div className="bg-[#1a1d26] p-3 flex justify-between items-center border-b border-border-custom">
+                      <h3 className="font-bold text-white">Bônus Acumulador</h3>
+                      <span className="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">+15%</span>
+                  </div>
+                   <div className="p-3 flex-1 flex flex-col gap-3">
+                      {matches.slice(3, 6).map((match, i) => (
+                          <div key={i} className="flex justify-between items-center bg-primary/50 p-2 rounded border border-white/5">
+                               <div className="flex flex-col gap-1">
+                                  <div className="flex items-center gap-2">
+                                      <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                                      <span className="font-bold text-sm text-white">{match.awayTeam}</span>
+                                  </div>
+                                  <span className="text-xs text-text-muted">Vencedor</span>
+                                  <span className="text-[10px] text-text-muted">{match.homeTeam} - {match.awayTeam}</span>
+                              </div>
+                              <div className="bg-white text-black font-bold px-2 py-1 rounded text-sm min-w-[50px] text-center">
+                                  {match.odds.away.toFixed(2)}
+                              </div>
+                          </div>
+                      ))}
+                  </div>
+                  <div className="p-3 mt-auto border-t border-border-custom">
+                      <button className="w-full bg-white/10 hover:bg-white/20 text-white font-bold py-3 rounded-lg transition-colors flex justify-center items-center gap-2">
+                          ADICIONAR AO CUPOM
+                      </button>
+                  </div>
+              </div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

@@ -7,6 +7,7 @@ import Sidebar from "@/components/layout/Sidebar";
 import Footer from "@/components/layout/Footer";
 import BottomNavigation from "@/components/layout/BottomNavigation";
 import { ThemeProvider } from "@/context/ThemeContext";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,6 +34,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-primary text-text-primary transition-colors duration-300`}
       >
+        <AuthProvider>
         <ThemeProvider>
           <TopBanner />
           <Header />
@@ -47,6 +49,7 @@ export default function RootLayout({
           </div>
           <BottomNavigation />
         </ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   );

@@ -1,21 +1,48 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { api } from '../../services/api';
 
-const bonusSlots = [
-  { id: 1, name: 'Búfalo da Fortuna', image: '🐂' },
-  { id: 2, name: 'Charles Raider & The Book of Origins', image: '📖' },
-  { id: 3, name: 'J Mania 3 Buffalo', image: '🐃' },
-  { id: 4, name: 'Big Bass Bonanza 1000', image: '🐟' },
-  { id: 5, name: 'Jewelling Diamonds', image: '💎' },
-  { id: 6, name: 'Gates of Olympus', image: '⚡' },
-  { id: 7, name: 'Gummy Giga Match', image: '🍬' },
-  { id: 8, name: 'Go High Gallina', image: '🐔' },
-  { id: 9, name: 'Gates of Olympus Super Scatter', image: '🏛️' },
-  { id: 10, name: '4 Pots Riches: Hold and Win', image: '🍀' },
-  { id: 11, name: 'Stampede Rush Trident', image: '🔱' },
-  { id: 12, name: 'Big Bass Boxing Bonus Round', image: '🥊' },
-];
+interface Game {
+  id: number;
+  name: string;
+  image: string;
+  provider?: string;
+}
 
 export default function BonusSlots() {
+  const [bonusSlots, setBonusSlots] = useState<Game[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchBonusSlots();
+  }, []);
+
+  const fetchBonusSlots = async () => {
+    try {
+      // Fetching games - ideally this would be a specific endpoint like '/games/bonus'
+      // For now we'll fetch all games and take the first 12, or filter if possible
+      const res = await api.get('/games');
+      // Taking first 12 for the slots display
+      setBonusSlots(res.data.slice(0, 12));
+    } catch (error) {
+      console.error('Erro ao buscar slots de bônus:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="w-full mb-12 animate-pulse">
+        <div className="h-8 bg-white/10 w-48 mb-6 rounded"></div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="aspect-video bg-white/5 rounded-xl border border-white/5"></div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full mb-12">
       {/* Header */}
@@ -24,7 +51,7 @@ export default function BonusSlots() {
           Slots de Bônus
         </h2>
         <button className="bg-[#2A2E3E] hover:bg-[#3A4155] text-white text-xs font-bold px-4 py-1.5 rounded-full transition-colors flex items-center gap-1">
-          1358 <span className="text-[10px]">❯</span>
+          {bonusSlots.length} <span className="text-[10px]">❯</span>
         </button>
       </div>
 
@@ -36,7 +63,11 @@ export default function BonusSlots() {
             <div className="relative aspect-video bg-[#1A1C24] rounded-xl overflow-hidden border border-transparent group-hover:border-accent-primary transition-all duration-300">
               {/* Image Placeholder */}
               <div className="absolute inset-0 flex items-center justify-center text-4xl bg-[#13151b] group-hover:scale-110 transition-transform duration-500">
-                {game.image}
+                {game.image && game.image.startsWith('http') ? (
+                  <img src={game.image} alt={game.name} className="w-full h-full object-cover" />
+                ) : (
+                  game.image || '🎰'
+                )}
               </div>
 
               {/* Play Overlay */}

@@ -49,7 +49,7 @@ export default function SportsPage() {
         <HeroCarousel />
         <SportsCategoryNav selectedSport={selectedSport} onSelectSport={setSelectedSport} />
         <AnimatedBanner />
-        <SportsFeed onAddBet={handleAddBet} onMatchSelect={handleMatchSelect} bets={bets} />
+        <SportsFeed onAddBet={handleAddBet} onMatchSelect={handleMatchSelect} bets={bets} selectedSport={selectedSport} />
       </main>
 
       {/* Sidebar Direita (Cupom / Detalhes / Mini Games) */}
@@ -85,7 +85,8 @@ export default function SportsPage() {
                     expandOnHover={true}
                 />
                 
-                <QuantumAI />
+                {/* <QuantumAI /> */}
+
 
                 <PopularBetsWidget />
                 <LongTermBetsWidget />

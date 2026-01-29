@@ -1,13 +1,32 @@
 'use client';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { api } from '../../services/api';
+
+interface Game {
+  id: number;
+  name: string;
+  image: string;
+}
 
 export default function MiniGamesSidebar() {
-  const games = [
-    { id: 1, name: 'Aviator', image: '✈️', hot: true, color: 'bg-red-600' },
-    { id: 2, name: 'Mines', image: '💣', hot: true, color: 'bg-blue-600' },
-    { id: 3, name: 'SpaceXY', image: '🚀', hot: false, color: 'bg-purple-600' },
-    { id: 4, name: 'Penalty', image: '⚽', hot: false, color: 'bg-green-600' },
-  ];
+  const [games, setGames] = useState<Game[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchGames = async () => {
+      try {
+        const res = await api.get('/games');
+        setGames(res.data.slice(0, 4));
+      } catch (error) {
+        console.error('Erro ao buscar mini games:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchGames();
+  }, []);
+
+  if (loading || games.length === 0) return null;
 
   return (
     <div className="flex flex-col h-full space-y-4">
@@ -42,13 +61,12 @@ export default function MiniGamesSidebar() {
               key={game.id}
               className="relative aspect-square bg-primary rounded-lg border border-border-custom hover:border-accent-primary transition-all group overflow-hidden"
             >
-              {game.hot && (
-                <span className="absolute top-1 left-1 bg-red-500 text-[8px] font-bold text-white px-1.5 py-0.5 rounded-full z-10 animate-pulse">
-                  HOT
-                </span>
-              )}
               <div className="absolute inset-0 flex items-center justify-center text-4xl group-hover:scale-110 transition-transform">
-                {game.image}
+                {game.image && game.image.startsWith('http') ? (
+                   <img src={game.image} alt={game.name} className="w-full h-full object-cover" />
+                ) : (
+                   game.image || '🎮'
+                )}
               </div>
               <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-[1px] p-1 text-center">
                 <span className="text-[10px] font-bold text-white block truncate">{game.name}</span>

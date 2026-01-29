@@ -7,8 +7,11 @@ import PromotionsSidebar from './PromotionsSidebar';
 import AgeGateModal from '../auth/AgeGateModal';
 import UserDropdown from './UserDropdown';
 import SupportModal from './SupportModal';
+import { api } from '../../services/api';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Header() {
+  const { user, isAuthenticated, login, logout } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
   const [isGuestProfileOpen, setIsGuestProfileOpen] = useState(false);
@@ -17,7 +20,12 @@ export default function Header() {
   const [isAgeGateOpen, setIsAgeGateOpen] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [modalTab, setModalTab] = useState<'login' | 'signup'>('login');
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  
+  // Form states
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   // Typewriter Effect State
   const [placeholder, setPlaceholder] = useState('');
@@ -25,9 +33,28 @@ export default function Header() {
   const [loopNum, setLoopNum] = useState(0);
   const [typingSpeed, setTypingSpeed] = useState(150);
   const [searchCategory, setSearchCategory] = useState('Cassino');
-  const [cpfValue, setCpfValue] = useState('');
+  const [balance, setBalance] = useState(0);
+
+  const fetchBalance = async () => {
+    try {
+      const res = await api.get('/wallets/me/balance');
+      // The backend returns { balanceCents: number, currency: string }
+      setBalance(res.data.balanceCents / 100);
+    } catch (err) {
+      console.error('Error fetching balance:', err);
+    }
+  };
 
   const gameNames = ["Sweet Bonanza", "Aviator", "Fortune Tiger", "Roleta", "Blackjack"];
+
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      fetchBalance();
+      // Poll balance every 30 seconds
+      const interval = setInterval(fetchBalance, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [isAuthenticated]);
 
   React.useEffect(() => {
     const handleTyping = () => {
@@ -56,6 +83,7 @@ export default function Header() {
   const openModal = (tab: 'login' | 'signup') => {
     setModalTab(tab);
     setIsModalOpen(true);
+    setError('');
   };
 
   const handleSignupClick = () => {
@@ -67,25 +95,35 @@ export default function Header() {
     openModal('signup');
   };
 
-  const handleLogin = () => {
-    setIsLoggedIn(true);
-    setIsModalOpen(false);
-  };
+  const handleAuth = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
 
-  const handleSignup = () => {
-    setIsLoggedIn(true);
-    setIsModalOpen(false);
-    // Abrir modal de depósito após cadastro (Primeiro Depósito)
-    setTimeout(() => setIsDepositModalOpen(true), 500);
+    try {
+      if (modalTab === 'login') {
+        const res = await api.post('/auth/login', { email, password });
+        login(res.data.access_token);
+        setIsModalOpen(false);
+      } else {
+        // Signup (Auto login)
+        const res = await api.post('/auth/register', { email, password });
+        login(res.data.access_token);
+        setIsModalOpen(false);
+        // Abrir modal de depósito após cadastro (Primeiro Depósito)
+        setTimeout(() => setIsDepositModalOpen(true), 500);
+      }
+    } catch (err: any) {
+      console.error(err);
+      setError(err.response?.data?.message || 'Erro ao realizar autenticação');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleGoogleLogin = () => {
-    // Simulação de login com Google
-    setIsLoggedIn(true);
-    setIsModalOpen(false);
-    if (modalTab === 'signup') {
-        setTimeout(() => setIsDepositModalOpen(true), 500);
-    }
+    const base = (api.defaults.baseURL || '');
+    window.location.href = `${base.replace(/\/$/, '')}/auth/google`;
   };
 
   return (
@@ -168,7 +206,7 @@ export default function Header() {
 
           <div className="flex items-center gap-4">
             <ThemeToggle />
-            {isLoggedIn ? (
+            {isAuthenticated ? (
               <>
                 <button 
                   onClick={() => setIsDepositModalOpen(true)}
@@ -181,9 +219,11 @@ export default function Header() {
                     <button className="text-gray-400 hover:text-white transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path><path d="M16 21h5v-5"></path></svg>
                     </button>
-                    <span className="text-white font-bold text-sm mx-2">R$ 0,00</span>
+                    <span className="text-white font-bold text-sm mx-2">
+                      {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(balance)}
+                    </span>
                     <div className="w-8 h-8 rounded-full bg-[#2a2e3e] flex items-center justify-center border border-gray-600">
-                         <img src="https://api.dicebear.com/9.x/avataaars/svg?seed=Felix" alt="Avatar" className="w-full h-full object-cover rounded-full" />
+                         <img src={`https://api.dicebear.com/9.x/avataaars/svg?seed=${user?.email || 'User'}`} alt="Avatar" className="w-full h-full object-cover rounded-full" />
                     </div>
                 </div>
 
@@ -192,14 +232,15 @@ export default function Header() {
                         onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
                         className="w-10 h-10 rounded-full bg-yellow-400 border-2 border-[#1e2330] overflow-hidden hover:scale-105 transition-transform ring-2 ring-transparent hover:ring-yellow-400 cursor-pointer"
                     >
-                        <img src="https://api.dicebear.com/9.x/avataaars/svg?seed=Felix" alt="Avatar" className="w-full h-full object-cover" />
+                        <img src={`https://api.dicebear.com/9.x/avataaars/svg?seed=${user?.email || 'User'}`} alt="Avatar" className="w-full h-full object-cover" />
                     </button>
                     
                     <UserDropdown 
                         isOpen={isUserDropdownOpen} 
                         onClose={() => setIsUserDropdownOpen(false)}
+                        user={user}
                         onLogout={() => {
-                            setIsLoggedIn(false);
+                            logout();
                             setIsUserDropdownOpen(false);
                         }}
                         onSupportClick={() => setIsSupportOpen(true)}
@@ -240,7 +281,10 @@ export default function Header() {
 
       <DepositModal 
         isOpen={isDepositModalOpen} 
-        onClose={() => setIsDepositModalOpen(false)} 
+        onClose={() => {
+          setIsDepositModalOpen(false);
+          fetchBalance();
+        }}
       />
       
       <PromotionsSidebar 
@@ -365,58 +409,52 @@ export default function Header() {
                     <div className="flex-grow border-t border-gray-700"></div>
                 </div>
 
-                {/* Form (CPF Input) */}
+                {/* Form (Email Input) */}
                 <form 
                     className="space-y-4" 
-                    onSubmit={(e) => { 
-                        e.preventDefault(); 
-                        if (modalTab === 'signup') {
-                            handleSignup();
-                        } else {
-                            handleLogin(); 
-                        }
-                    }}
+                    onSubmit={handleAuth}
                 >
+                     {error && (
+                       <div className="bg-red-500/10 border border-red-500/50 text-red-500 text-sm p-3 rounded-lg text-center">
+                         {error}
+                       </div>
+                     )}
+
                      <div className="space-y-2">
                         <div className="relative group">
                             <input 
-                                type="text" 
-                                placeholder="CPF *" 
+                                type="email" 
+                                placeholder="Email *" 
                                 className="w-full bg-[#15171e] border border-gray-700 rounded-lg pl-4 pr-24 py-3 text-white placeholder-gray-500 focus:border-[#ccff00] focus:ring-1 focus:ring-[#ccff00] outline-none transition-all"
-                                value={cpfValue}
-                                onChange={(e) => setCpfValue(e.target.value)}
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
                             />
-                            <button 
-                                type="button"
-                                className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#2a2e3e] hover:bg-[#353a4d] text-gray-300 text-xs px-3 py-1.5 rounded transition-colors border border-gray-600 hover:text-white hover:border-gray-500"
-                            >
-                                Validar
-                            </button>
                         </div>
-                        
-                        {modalTab === 'signup' && (
-                            <p className="text-green-600 text-xs font-medium animate-pulse flex items-center gap-1">
-                                <span className="w-1.5 h-1.5 bg-green-500 rounded-full inline-block"></span>
-                                Por favor, digite e valide seu CPF para continuar...
-                            </p>
-                        )}
                      </div>
                      
-                     {modalTab === 'login' && (
-                         <div className="animate-fade-in">
-                             <input 
-                                type="password"
-                                placeholder="Senha"
-                                className="w-full bg-[#15171e] border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:border-[#ccff00] focus:ring-1 focus:ring-[#ccff00] outline-none transition-all"
-                             />
+                     <div className="animate-fade-in">
+                         <input 
+                            type="password"
+                            placeholder="Senha"
+                            className="w-full bg-[#15171e] border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:border-[#ccff00] focus:ring-1 focus:ring-[#ccff00] outline-none transition-all"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                         />
+                         {modalTab === 'login' && (
                              <div className="text-right mt-1">
                                 <a href="#" className="text-xs text-gray-400 hover:text-[#ccff00]">Esqueceu a senha?</a>
                              </div>
-                         </div>
-                     )}
+                         )}
+                     </div>
 
-                     <button className="w-full bg-[#ccff00] hover:bg-[#b3e600] text-black font-bold py-3 rounded-lg transition-all shadow-[0_0_15px_rgba(204,255,0,0.2)] hover:shadow-[0_0_25px_rgba(204,255,0,0.4)] mt-2">
-                        {modalTab === 'signup' ? 'CONTINUAR' : 'ENTRAR'}
+                     <button 
+                       type="submit"
+                       disabled={loading}
+                       className="w-full bg-[#ccff00] hover:bg-[#b3e600] text-black font-bold py-3 rounded-lg transition-all shadow-[0_0_15px_rgba(204,255,0,0.2)] hover:shadow-[0_0_25px_rgba(204,255,0,0.4)] mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                     >
+                        {loading ? 'Carregando...' : (modalTab === 'signup' ? 'CONTINUAR' : 'ENTRAR')}
                      </button>
                 </form>
             </div>

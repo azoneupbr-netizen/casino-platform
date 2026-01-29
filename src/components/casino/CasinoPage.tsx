@@ -1,12 +1,24 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import HeroBanner from './HeroBanner';
 import TopGames from './TopGames';
 import BonusSlots from './BonusSlots';
+import { api } from '../../services/api';
+
+interface Game {
+  id: number;
+  name: string;
+  provider: string;
+  category: string;
+  jackpot: boolean;
+  image: string;
+}
 
 export default function CasinoPage() {
   const [selectedCategory, setSelectedCategory] = useState('Todos');
   const [selectedProvider, setSelectedProvider] = useState('Todos');
+  const [games, setGames] = useState<Game[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const categories = ['Todos', 'Populares', 'Novos', 'Jackpot', 'Megaways', 'Clássicos'];
   
@@ -22,24 +34,22 @@ export default function CasinoPage() {
     'Push Gaming',
   ];
 
-  const games = [
-    { id: 1, name: 'Gates of Olympus', provider: 'Pragmatic Play', category: 'Populares', jackpot: false, image: '🏛️' },
-    { id: 2, name: 'Sweet Bonanza', provider: 'Pragmatic Play', category: 'Populares', jackpot: false, image: '🍭' },
-    { id: 3, name: 'Book of Dead', provider: 'Play\'n GO', category: 'Clássicos', jackpot: false, image: '📖' },
-    { id: 4, name: 'Starburst', provider: 'NetEnt', category: 'Clássicos', jackpot: false, image: '💎' },
-    { id: 5, name: 'Mega Moolah', provider: 'Microgaming', category: 'Jackpot', jackpot: true, image: '🦁' },
-    { id: 6, name: 'Gonzo\'s Quest', provider: 'NetEnt', category: 'Populares', jackpot: false, image: '🗿' },
-    { id: 7, name: 'Wanted Dead or Wild', provider: 'Hacksaw Gaming', category: 'Novos', jackpot: false, image: '🤠' },
-    { id: 8, name: 'The Dog House', provider: 'Pragmatic Play', category: 'Populares', jackpot: false, image: '🐕' },
-    { id: 9, name: 'Money Train 3', provider: 'Relax Gaming', category: 'Novos', jackpot: false, image: '🚂' },
-    { id: 10, name: 'Razor Shark', provider: 'Push Gaming', category: 'Populares', jackpot: false, image: '🦈' },
-    { id: 11, name: 'Big Bass Bonanza', provider: 'Pragmatic Play', category: 'Populares', jackpot: false, image: '🎣' },
-    { id: 12, name: 'Fruit Party', provider: 'Pragmatic Play', category: 'Novos', jackpot: false, image: '🍎' },
-    { id: 13, name: 'Divine Fortune', provider: 'NetEnt', category: 'Jackpot', jackpot: true, image: '🏺' },
-    { id: 14, name: 'Wolf Gold', provider: 'Pragmatic Play', category: 'Clássicos', jackpot: false, image: '🐺' },
-    { id: 15, name: 'Reactoonz', provider: 'Play\'n GO', category: 'Populares', jackpot: false, image: '👾' },
-    { id: 16, name: 'Fire Joker', provider: 'Play\'n GO', category: 'Clássicos', jackpot: false, image: '🃏' },
-  ];
+  useEffect(() => {
+    fetchGames();
+  }, []);
+
+  const fetchGames = async () => {
+    try {
+      const res = await api.get('/games'); // Ajuste o endpoint conforme necessário
+      setGames(res.data);
+    } catch (error) {
+      console.error('Erro ao buscar jogos:', error);
+      // Fallback para array vazio
+      setGames([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredGames = games.filter((game) => {
     const matchesCategory = selectedCategory === 'Todos' || game.category === selectedCategory;

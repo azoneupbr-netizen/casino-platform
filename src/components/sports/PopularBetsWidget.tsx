@@ -1,53 +1,85 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { api } from '../../services/api';
+
+interface Match {
+  id: number;
+  homeTeam: string;
+  awayTeam: string;
+  odds: {
+    home: number;
+    draw: number;
+    away: number;
+  };
+  homeIcon: string;
+  awayIcon: string;
+}
 
 const PopularBetsWidget = () => {
-  const matches = [
-    {
-      id: 1,
-      home: { name: 'Manchester City', logo: 'https://media.api-sports.io/football/teams/50.png' },
-      away: { name: 'Wolverhampton', logo: 'https://media.api-sports.io/football/teams/39.png' },
-      selection: 'Manchester City',
-      market: 'Vencedor do encontro',
-      odd: 1.33,
-      highlight: false
-    },
-    {
-      id: 2,
-      home: { name: 'FC Arouca', logo: 'https://media.api-sports.io/football/teams/223.png' },
-      away: { name: 'Sporting', logo: 'https://media.api-sports.io/football/teams/228.png' },
-      selection: 'Sporting',
-      market: 'Vencedor do encontro',
-      odd: 1.30,
-      highlight: false
-    },
-    {
-      id: 3,
-      home: { name: 'Villarreal CF', logo: 'https://media.api-sports.io/football/teams/533.png' },
-      away: { name: 'Real Madrid', logo: 'https://media.api-sports.io/football/teams/541.png' },
-      selection: 'Real Madrid',
-      market: 'Vencedor do encontro',
-      odd: 1.87,
-      highlight: true
-    },
-    {
-      id: 4,
-      home: { name: 'PSV Eindhoven', logo: 'https://media.api-sports.io/football/teams/197.png' },
-      away: { name: 'NAC Breda', logo: 'https://media.api-sports.io/football/teams/204.png' },
-      selection: 'PSV Eindhoven',
-      market: 'Vencedor do encontro',
-      odd: 1.33,
-      highlight: false
-    },
-    {
-      id: 5,
-      home: { name: 'FC Barcelona', logo: 'https://media.api-sports.io/football/teams/529.png' },
-      away: { name: 'Real Oviedo', logo: 'https://media.api-sports.io/football/teams/546.png' },
-      selection: 'FC Barcelona',
-      market: 'Vencedor do encontro',
-      odd: 1.10,
-      highlight: false
+  const [matches, setMatches] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchPopularMatches();
+  }, []);
+
+  const fetchPopularMatches = async () => {
+    try {
+      const res = await api.get('/sports/matches');
+      // Transform API matches to widget format
+      // We'll take the first 5 matches as "popular"
+      const popularMatches = res.data.slice(0, 5).map((match: Match) => {
+        // Simple logic to pick a selection: pick the favorite (lowest odd)
+        const odds = match.odds || { home: 1, draw: 1, away: 1 };
+        let selection = match.homeTeam;
+        let odd = odds.home;
+        
+        if (odds.away < odd) {
+          selection = match.awayTeam;
+          odd = odds.away;
+        }
+
+        return {
+          id: match.id,
+          home: { name: match.homeTeam, logo: match.homeIcon || 'https://media.api-sports.io/football/teams/50.png' },
+          away: { name: match.awayTeam, logo: match.awayIcon || 'https://media.api-sports.io/football/teams/39.png' },
+          selection: selection,
+          market: 'Vencedor do encontro',
+          odd: odd,
+          highlight: false
+        };
+      });
+      setMatches(popularMatches);
+    } catch (error) {
+      console.error('Erro ao buscar apostas populares:', error);
+      setMatches([]);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  if (loading) {
+    return (
+      <div className="bg-[#0F1923] rounded-xl overflow-hidden shadow-lg border border-slate-800">
+        <div className="bg-[#FF4500] h-10 w-full animate-pulse opacity-50"></div>
+        <div className="divide-y divide-slate-800">
+            {[1, 2, 3].map(i => (
+                <div key={i} className="p-3 animate-pulse">
+                    <div className="flex justify-between mb-2">
+                        <div className="h-4 w-20 bg-white/10 rounded"></div>
+                        <div className="h-4 w-20 bg-white/10 rounded"></div>
+                    </div>
+                    <div className="flex justify-between mt-2">
+                         <div className="h-4 w-32 bg-white/10 rounded"></div>
+                         <div className="h-6 w-12 bg-white/10 rounded"></div>
+                    </div>
+                </div>
+            ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (matches.length === 0) return null;
 
   return (
     <div className="bg-[#0F1923] rounded-xl overflow-hidden shadow-lg border border-slate-800">
@@ -85,7 +117,7 @@ const PopularBetsWidget = () => {
                     <div className={`text-xs ${match.highlight ? 'text-white/80' : 'text-slate-500'}`}>{match.market}</div>
                 </div>
                 <div className={`font-bold text-sm px-2 py-0.5 rounded ${match.highlight ? 'bg-black/20 text-white' : 'text-[#3B82F6]'}`}>
-                    {match.odd.toFixed(2)}
+                    {match.odd?.toFixed(2)}
                 </div>
             </div>
           </div>

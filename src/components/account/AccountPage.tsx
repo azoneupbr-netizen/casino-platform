@@ -1,32 +1,82 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { api } from '../../services/api';
+import { authService } from '../../services/auth';
 
 export default function AccountPage() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<'profile' | 'security' | 'verification'>('profile');
   
   // Profile State
-  const [name, setName] = useState('Brand Medvediev');
-  const [email, setEmail] = useState('allyk@example.com');
-  const [phone, setPhone] = useState('+55 11 99999-9999');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      router.push('/');
+      return;
+    }
+    fetchUserData();
+  }, []);
+
+  const fetchUserData = async () => {
+    try {
+        const res = await api.get('/auth/me');
+        const user = res.data;
+        setName(user.name || '');
+        setEmail(user.email || '');
+        setPhone(user.phone || '');
+    } catch (error) {
+        console.error('Erro ao carregar dados do usuário:', error);
+        router.push('/');
+    } finally {
+        setLoading(false);
+    }
+  };
 
   // Password State
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleSaveProfile = () => {
-    alert('Perfil atualizado com sucesso!');
+  const handleSaveProfile = async () => {
+    try {
+      setLoading(true);
+      await authService.updateProfile({ name, phone });
+      alert('Perfil atualizado com sucesso!');
+    } catch (error: any) {
+      console.error('Erro ao atualizar perfil:', error);
+      const errorMessage = error.response?.data?.message || error.response?.data?.error || error.message || 'Erro desconhecido';
+      alert(`Erro ao atualizar perfil: ${errorMessage}`);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleChangePassword = () => {
+  const handleChangePassword = async () => {
     if (newPassword !== confirmPassword) {
       alert('As senhas não coincidem!');
       return;
     }
-    alert('Senha alterada com sucesso!');
-    setCurrentPassword('');
-    setNewPassword('');
-    setConfirmPassword('');
+    
+    try {
+      setLoading(true);
+      await authService.updatePassword({ currentPassword, newPassword });
+      alert('Senha alterada com sucesso!');
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (error: any) {
+      console.error('Erro ao alterar senha:', error);
+      const errorMessage = error.response?.data?.message || error.response?.data?.error || error.message || 'Erro desconhecido';
+      alert(`Erro ao alterar senha: ${errorMessage}`);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

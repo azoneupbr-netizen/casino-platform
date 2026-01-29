@@ -1,17 +1,43 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { api } from '../../services/api';
+
+interface Bet {
+  id: string;
+  type: 'sports' | 'casino';
+  game: string;
+  market: string;
+  selection: string;
+  odds: number;
+  stake: number;
+  return: number;
+  status: 'win' | 'loss' | 'pending';
+  date: string;
+}
 
 export default function BetsPage() {
   const [activeFilter, setActiveFilter] = useState<'all' | 'sports' | 'casino'>('all');
+  const [bets, setBets] = useState<Bet[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Mock Bets Data
-  const bets = [
-    { id: 1, type: 'sports', game: 'Flamengo vs Vasco', market: 'Vencedor da Partida', selection: 'Flamengo', odds: 1.85, stake: 50.00, return: 92.50, status: 'win', date: '24/01/2026 14:30' },
-    { id: 2, type: 'casino', game: 'Gates of Olympus', market: 'Slot Spin', selection: '-', odds: 50.0, stake: 2.00, return: 100.00, status: 'win', date: '24/01/2026 14:45' },
-    { id: 3, type: 'sports', game: 'Lakers vs Warriors', market: 'Total de Pontos', selection: 'Over 220.5', odds: 1.90, stake: 100.00, return: 0, status: 'loss', date: '24/01/2026 12:00' },
-    { id: 4, type: 'casino', game: 'Sweet Bonanza', market: 'Slot Spin', selection: '-', odds: 0, stake: 5.00, return: 0, status: 'loss', date: '24/01/2026 14:50' },
-    { id: 5, type: 'sports', game: 'Real Madrid vs Barcelona', market: 'Ambos Marcam', selection: 'Sim', odds: 1.75, stake: 200.00, return: 0, status: 'pending', date: '24/01/2026 16:00' },
-  ];
+  useEffect(() => {
+    fetchBets();
+  }, []);
+
+  const fetchBets = async () => {
+    try {
+      // Tenta buscar apostas do backend
+      // Ajuste o endpoint conforme a API real
+      const res = await api.get('/bets/me'); 
+      setBets(res.data);
+    } catch (error) {
+      console.error('Erro ao buscar apostas:', error);
+      // Se falhar, mantém lista vazia ao invés de dados falsos
+      setBets([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredBets = activeFilter === 'all' ? bets : bets.filter(bet => bet.type === activeFilter);
 

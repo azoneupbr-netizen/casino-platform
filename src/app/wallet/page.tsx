@@ -1,29 +1,82 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { api } from '../../services/api';
+
+interface Transaction {
+  id: string;
+  type: string;
+  amount: number;
+  status: string;
+  createdAt: string;
+  method: string;
+}
 
 export default function WalletPage() {
   const [activeTab, setActiveTab] = useState<'deposit' | 'withdraw' | 'history'>('deposit');
   const [amount, setAmount] = useState<number>(50);
   const [pixKey, setPixKey] = useState('');
   const [step, setStep] = useState<'amount' | 'qrcode'>('amount');
+  const [loading, setLoading] = useState(false);
+  const [pixData, setPixData] = useState<{ qrCode: string; qrCodeUrl: string; externalId: string } | null>(null);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   const quickAmounts = [20, 50, 100];
 
-  // Mock Transactions Data
-  const transactions = [
-    { id: 1, type: 'Depósito', amount: 50.00, status: 'Concluído', date: '24/01/2026 10:30', method: 'PIX' },
-    { id: 2, type: 'Aposta', amount: -10.00, status: 'Concluído', date: '24/01/2026 10:45', method: 'Cassino' },
-    { id: 3, type: 'Prêmio', amount: 25.00, status: 'Concluído', date: '24/01/2026 11:00', method: 'Cassino' },
-    { id: 4, type: 'Saque', amount: -50.00, status: 'Pendente', date: '24/01/2026 14:20', method: 'PIX' },
-  ];
+  useEffect(() => {
+    if (activeTab === 'history') {
+      fetchTransactions();
+    }
+  }, [activeTab]);
 
-  const handleDeposit = () => {
-    setStep('qrcode');
+  const fetchTransactions = async () => {
+    try {
+      const res = await api.get('/wallets/me/transactions');
+      setTransactions(res.data);
+    } catch (error) {
+      console.error('Erro ao buscar transações:', error);
+      // Fallback vazio ou tratamento de erro
+    }
   };
 
-  const handleWithdraw = () => {
-    alert(`Saque de R$ ${amount} solicitado para a chave PIX: ${pixKey}`);
-    // Reset or redirect logic here
+  const handleDeposit = async () => {
+    setLoading(true);
+    try {
+      const res = await api.post('/payments/deposit', {
+        amount,
+        currency: 'BRL',
+        provider: 'PIX'
+      });
+      setPixData({
+        qrCode: res.data.pixCode,
+        qrCodeUrl: res.data.pixQrCode,
+        externalId: res.data.externalId
+      });
+      setStep('qrcode');
+    } catch (error) {
+      console.error('Erro ao criar depósito:', error);
+      alert('Erro ao processar depósito. Tente novamente.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleWithdraw = async () => {
+    setLoading(true);
+    try {
+      await api.post('/payments/withdraw', {
+        amount,
+        pixKey,
+        pixKeyType: 'CPF' // Simplificação
+      });
+      alert('Saque solicitado com sucesso!');
+      setAmount(50);
+      setPixKey('');
+    } catch (error) {
+      console.error('Erro ao solicitar saque:', error);
+      alert('Erro ao processar saque. Verifique o saldo ou tente novamente.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -110,10 +163,14 @@ export default function WalletPage() {
                         ) : (
                             <div className="text-center space-y-6 animate-fade-in">
                                 <div className="bg-white p-4 rounded-xl inline-block shadow-xl">
-                                    <div className="w-48 h-48 bg-black pattern-dots relative">
-                                        <div className="absolute inset-0 flex items-center justify-center">
-                                            <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center text-xs font-bold text-black">PIX</div>
-                                        </div>
+                                    <div className="w-48 h-48 bg-black pattern-dots relative overflow-hidden">
+                                        {pixData?.qrCodeUrl ? (
+                                            <img src={pixData.qrCodeUrl} alt="QR Code PIX" className="w-full h-full object-contain" />
+                                        ) : (
+                                            <div className="absolute inset-0 flex items-center justify-center">
+                                                <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center text-xs font-bold text-black">PIX</div>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
 
@@ -122,10 +179,13 @@ export default function WalletPage() {
                                     <div className="flex gap-2">
                                         <input 
                                             readOnly
-                                            value="00020126330014BR.GOV.BCB.PIX011112345678901..."
+                                            value={pixData?.qrCode || ''}
                                             className="flex-1 bg-[#0B1622] border border-slate-700 rounded-lg px-3 py-3 text-slate-300 text-sm outline-none font-mono"
                                         />
-                                        <button className="bg-[#1a2942] hover:bg-[#243a5e] text-[#ccff00] font-bold px-4 rounded-lg transition-all border border-[#ccff00]/20">
+                                        <button 
+                                            onClick={() => pixData?.qrCode && navigator.clipboard.writeText(pixData.qrCode)}
+                                            className="bg-[#1a2942] hover:bg-[#243a5e] text-[#ccff00] font-bold px-4 rounded-lg transition-all border border-[#ccff00]/20"
+                                        >
                                             Copiar
                                         </button>
                                     </div>
@@ -222,24 +282,30 @@ export default function WalletPage() {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-800">
-                                    {transactions.map((tx) => (
+                                    {transactions.length > 0 ? transactions.map((tx) => (
                                         <tr key={tx.id} className="hover:bg-[#1a2942]/20 transition-colors">
                                             <td className="px-4 py-4 font-medium text-white">{tx.type}</td>
                                             <td className="px-4 py-4">{tx.method}</td>
                                             <td className={`px-4 py-4 font-bold ${tx.amount > 0 ? 'text-green-500' : 'text-red-500'}`}>
                                                 {tx.amount > 0 ? '+' : ''}R$ {Math.abs(tx.amount).toFixed(2).replace('.', ',')}
                                             </td>
-                                            <td className="px-4 py-4 text-xs">{tx.date}</td>
+                                            <td className="px-4 py-4 text-xs">{new Date(tx.createdAt).toLocaleString('pt-BR')}</td>
                                             <td className="px-4 py-4 text-right">
                                                 <span className={`inline-block px-2 py-1 rounded text-xs font-bold ${
-                                                    tx.status === 'Concluído' ? 'bg-green-500/10 text-green-500' : 
-                                                    tx.status === 'Pendente' ? 'bg-yellow-500/10 text-yellow-500' : 'bg-red-500/10 text-red-500'
+                                                    tx.status === 'completed' || tx.status === 'Concluído' ? 'bg-green-500/10 text-green-500' : 
+                                                    tx.status === 'pending' || tx.status === 'Pendente' ? 'bg-yellow-500/10 text-yellow-500' : 'bg-red-500/10 text-red-500'
                                                 }`}>
                                                     {tx.status}
                                                 </span>
                                             </td>
                                         </tr>
-                                    ))}
+                                    )) : (
+                                        <tr>
+                                            <td colSpan={5} className="px-4 py-8 text-center text-slate-500">
+                                                Nenhuma transação encontrada.
+                                            </td>
+                                        </tr>
+                                    )}
                                 </tbody>
                             </table>
                         </div>

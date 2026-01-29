@@ -1,20 +1,35 @@
-import React, { useRef } from 'react';
+'use client';
+import React, { useRef, useState, useEffect } from 'react';
+import { api } from '../../services/api';
 
-const topGames = [
-  { id: 1, name: 'Fortune Tiger', provider: 'PG Soft', image: '🐯' },
-  { id: 2, name: 'Fortune Rabbit', provider: 'PG Soft', image: '🐰' },
-  { id: 3, name: 'Yo Dragon', provider: 'PopOK', image: '🐉' },
-  { id: 4, name: 'Fortune Dragon', provider: 'PG Soft', image: '🐲' },
-  { id: 5, name: 'Roleta Brasil', provider: 'Evolution', image: '🎡' },
-  { id: 6, name: 'Aviator', provider: 'Spribe', image: '✈️' },
-  { id: 7, name: 'Mines', provider: 'Spribe', image: '💣' },
-  { id: 8, name: 'Sweet Bonanza', provider: 'Pragmatic Play', image: '🍭' },
-  { id: 9, name: 'Gates of Olympus', provider: 'Pragmatic Play', image: '🏛️' },
-  { id: 10, name: 'Big Bass Bonanza', provider: 'Pragmatic Play', image: '🐟' },
-];
+interface Game {
+  id: number;
+  name: string;
+  provider: string;
+  image: string;
+}
 
 export default function TopGames() {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [topGames, setTopGames] = useState<Game[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchTopGames();
+  }, []);
+
+  const fetchTopGames = async () => {
+    try {
+      const res = await api.get('/games/top'); // Ajuste o endpoint conforme necessário
+      setTopGames(res.data);
+    } catch (error) {
+      console.error('Erro ao buscar top jogos:', error);
+      // Fallback para array vazio ou manter loading false
+      setTopGames([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
@@ -23,6 +38,21 @@ export default function TopGames() {
       current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
   };
+
+  if (loading && topGames.length === 0) {
+    return (
+      <div className="w-full mb-12">
+          <div className="flex items-center justify-between mb-6">
+              <div className="h-8 w-48 bg-white/10 rounded animate-pulse"></div>
+          </div>
+          <div className="flex gap-4 overflow-hidden">
+              {[1, 2, 3, 4, 5].map((i) => (
+                  <div key={i} className="min-w-[160px] aspect-[3/4] bg-white/5 rounded-xl animate-pulse border border-white/5"></div>
+              ))}
+          </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full mb-12">
@@ -69,7 +99,7 @@ export default function TopGames() {
             <div className="relative z-10 bg-secondary rounded-xl overflow-hidden border border-border-custom hover:border-accent-gold transition-all cursor-pointer hover:scale-105 hover:shadow-xl group w-full aspect-[3/4]">
                {/* Image Placeholder */}
                <div className="absolute inset-0 bg-tertiary flex items-center justify-center text-6xl group-hover:scale-110 transition-transform duration-500">
-                  {game.image}
+                  {game.image && game.image.startsWith('http') ? <img src={game.image} alt={game.name} className="w-full h-full object-cover" /> : game.image}
                </div>
                
                {/* Overlay */}

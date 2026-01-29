@@ -44,21 +44,23 @@ export default function LiveMatchInfo({ match, onClose }: LiveMatchInfoProps) {
         </div>
       </div>
 
-      {/* Estatísticas Rápidas */}
+      {/* Estatísticas Rápidas - Hidden if no data */}
+      {/* 
       <div className="p-3 grid grid-cols-3 gap-2 border-b border-border-custom bg-tertiary/30">
         <div className="text-center">
             <p className="text-[10px] text-text-muted">Ataques</p>
-            <p className="font-bold text-text-primary text-xs">42 - 38</p>
+            <p className="font-bold text-text-primary text-xs">--</p>
         </div>
         <div className="text-center border-x border-border-custom">
             <p className="text-[10px] text-text-muted">Posse</p>
-            <p className="font-bold text-text-primary text-xs">55% - 45%</p>
+            <p className="font-bold text-text-primary text-xs">--</p>
         </div>
         <div className="text-center">
             <p className="text-[10px] text-text-muted">Chutes</p>
-            <p className="font-bold text-text-primary text-xs">8 - 6</p>
+            <p className="font-bold text-text-primary text-xs">--</p>
         </div>
       </div>
+      */}
 
       {/* Mercados Expandidos (Scrollable) */}
       <div className="flex-1 overflow-y-auto p-3 space-y-3 scrollbar-thin scrollbar-thumb-border-custom">
@@ -82,34 +84,38 @@ export default function LiveMatchInfo({ match, onClose }: LiveMatchInfoProps) {
         </div>
 
         {/* Mercado: Total de Gols */}
+        {match.odds.over25 && match.odds.under25 && (
         <div>
             <h4 className="text-xs font-bold text-text-muted mb-2 uppercase">Total de Gols (2.5)</h4>
             <div className="grid grid-cols-2 gap-1">
                 <button className="bg-primary hover:bg-tertiary p-2 rounded text-center border border-border-custom transition-colors flex justify-between px-3">
                     <span className="text-xs text-text-secondary">Mais de</span>
-                    <span className="font-bold text-accent-gold">1.85</span>
+                    <span className="font-bold text-accent-gold">{match.odds.over25.toFixed(2)}</span>
                 </button>
                 <button className="bg-primary hover:bg-tertiary p-2 rounded text-center border border-border-custom transition-colors flex justify-between px-3">
                     <span className="text-xs text-text-secondary">Menos de</span>
-                    <span className="font-bold text-accent-gold">1.95</span>
+                    <span className="font-bold text-accent-gold">{match.odds.under25.toFixed(2)}</span>
                 </button>
             </div>
         </div>
+        )}
         
         {/* Mercado: Ambas Marcam */}
+        {match.odds.bothScoreYes && match.odds.bothScoreNo && (
         <div>
-            <h4 className="text-xs font-bold text-text-muted mb-2 uppercase">Ambas Marcam</h4>
-            <div className="grid grid-cols-2 gap-1">
-                <button className="bg-primary hover:bg-tertiary p-2 rounded text-center border border-border-custom transition-colors flex justify-between px-3">
-                    <span className="text-xs text-text-secondary">Sim</span>
-                    <span className="font-bold text-accent-gold">1.75</span>
-                </button>
-                <button className="bg-primary hover:bg-tertiary p-2 rounded text-center border border-border-custom transition-colors flex justify-between px-3">
-                    <span className="text-xs text-text-secondary">Não</span>
-                    <span className="font-bold text-accent-gold">2.05</span>
-                </button>
-            </div>
+             <h4 className="text-xs font-bold text-text-muted mb-2 uppercase">Ambos Marcam</h4>
+             <div className="grid grid-cols-2 gap-1">
+                 <button className="bg-primary hover:bg-tertiary p-2 rounded text-center border border-border-custom transition-colors flex justify-between px-3">
+                     <span className="text-xs text-text-secondary">Sim</span>
+                     <span className="font-bold text-accent-gold">{match.odds.bothScoreYes.toFixed(2)}</span>
+                 </button>
+                 <button className="bg-primary hover:bg-tertiary p-2 rounded text-center border border-border-custom transition-colors flex justify-between px-3">
+                     <span className="text-xs text-text-secondary">Não</span>
+                     <span className="font-bold text-accent-gold">{match.odds.bothScoreNo.toFixed(2)}</span>
+                 </button>
+             </div>
         </div>
+        )}
       </div>
     </div>
   );
