@@ -22,28 +22,59 @@ const MOCK_BENEFITS: BenefitsResponse = {
   rakeback: { available: true, amount: 45.30 }
 };
 
+const getStoredMock = () => {
+  if (typeof window === 'undefined') return { ...MOCK_BENEFITS };
+  const stored = localStorage.getItem('benefits_mock_state');
+  return stored ? JSON.parse(stored) : { ...MOCK_BENEFITS };
+};
+
+const saveStoredMock = (state: BenefitsResponse) => {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('benefits_mock_state', JSON.stringify(state));
+  }
+};
+
 export const benefitsService = {
   getBenefitsStatus: async () => {
     try {
+      // Tenta API real primeiro
       const response = await api.get<BenefitsResponse>('/benefits/status');
+      // Se sucesso, atualiza o mock local para ficar sincronizado
+      saveStoredMock(response.data);
       return response.data;
     } catch (error) {
-      console.warn('API Benefits não disponível, usando dados mockados (desenvolvimento)');
-      // Retorna mock se falhar (ex: backend remoto não atualizado)
-      return MOCK_BENEFITS;
+      console.warn('API Benefits não disponível, usando dados mockados com persistência local');
+      return getStoredMock();
     }
   },
 
   claimBenefit: async (type: BenefitType) => {
     try {
-      // Correção: Enviar type na URL conforme o backend espera
       const response = await api.post(`/benefits/claim/${type}`);
+      // Se sucesso, também atualiza o mock local para refletir o resgate
+      const currentMock = getStoredMock();
+      if (type === 'DAILY_CASHBACK') currentMock.daily.claimed = true;
+      else if (type === 'WEEKLY_BONUS') currentMock.weekly.claimed = true;
+      else if (type === 'RAKEBACK') currentMock.rakeback.amount = 0; // Reset rakeback
+      saveStoredMock(currentMock);
+      
       return response.data;
     } catch (error) {
-      console.warn('API Benefits Claim não disponível, simulando sucesso');
+      console.warn('API Benefits Claim não disponível, simulando sucesso com persistência');
+      
+      const currentMock = getStoredMock();
+      if (type === 'DAILY_CASHBACK') {
+        currentMock.daily = { ...currentMock.daily, available: false, amount: 0, claimed: true };
+      } else if (type === 'WEEKLY_BONUS') {
+        currentMock.weekly = { ...currentMock.weekly, available: false, amount: 0, claimed: true };
+      } else if (type === 'RAKEBACK') {
+        currentMock.rakeback = { ...currentMock.rakeback, available: false, amount: 0, claimed: true };
+      }
+      saveStoredMock(currentMock);
+
       // Simula sucesso após 1s
       return new Promise((resolve) => {
-        setTimeout(() => resolve({ success: true, message: 'Benefício resgatado (MOCK)' }), 1000);
+        setTimeout(() => resolve({ success: true, message: 'Benefício resgatado (MOCK PERSISTENTE)' }), 1000);
       });
     }
   },

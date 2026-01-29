@@ -39,9 +39,20 @@ export default function Header() {
     try {
       const res = await api.get('/wallets/me/balance');
       // The backend returns { balanceCents: number, currency: string }
-      setBalance(res.data.balanceCents / 100);
+      const newBalance = res.data.balanceCents / 100;
+      setBalance(newBalance);
+      
+      // Salva o saldo real no cache
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('wallet_balance_cache', newBalance.toString());
+      }
     } catch (err) {
       console.error('Error fetching balance:', err);
+      // Fallback para cache local se API falhar
+      if (typeof window !== 'undefined') {
+        const cached = localStorage.getItem('wallet_balance_cache');
+        if (cached) setBalance(parseFloat(cached));
+      }
     }
   };
 
@@ -49,12 +60,37 @@ export default function Header() {
 
   React.useEffect(() => {
     if (isAuthenticated) {
+      // Tenta carregar do cache imediatamente para evitar "0" piscando
+      if (typeof window !== 'undefined') {
+        const cached = localStorage.getItem('wallet_balance_cache');
+        if (cached) setBalance(parseFloat(cached));
+      }
+
       fetchBalance();
       // Poll balance every 30 seconds
       const interval = setInterval(fetchBalance, 30000);
       return () => clearInterval(interval);
     }
   }, [isAuthenticated]);
+
+  // Listen for local balance updates (e.g. from rewards)
+  React.useEffect(() => {
+    const handleBalanceUpdate = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      if (customEvent.detail && typeof customEvent.detail.amount === 'number') {
+        setBalance(prev => {
+            const newBal = prev + customEvent.detail.amount;
+            if (typeof window !== 'undefined') {
+                localStorage.setItem('wallet_balance_cache', newBal.toString());
+            }
+            return newBal;
+        });
+      }
+    };
+
+    window.addEventListener('wallet:update_balance', handleBalanceUpdate);
+    return () => window.removeEventListener('wallet:update_balance', handleBalanceUpdate);
+  }, []);
 
   React.useEffect(() => {
     const handleTyping = () => {

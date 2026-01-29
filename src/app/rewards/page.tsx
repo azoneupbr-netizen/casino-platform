@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { benefitsService, BenefitsResponse, BenefitType } from '@/services/benefits';
 import { Loader2 } from 'lucide-react';
+import Toast, { ToastType } from '@/components/ui/Toast';
 
 export default function RewardsPage() {
   const currentLevel = "MEMBRO BRAND";
@@ -15,6 +16,21 @@ export default function RewardsPage() {
   const [loading, setLoading] = useState(true);
   const [claiming, setClaiming] = useState<BenefitType | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  // Estado para notificações (Toast)
+  const [toast, setToast] = useState<{ message: string; type: ToastType; isVisible: boolean }>({
+    message: '',
+    type: 'success',
+    isVisible: false
+  });
+
+  const showToast = (message: string, type: ToastType) => {
+    setToast({ message, type, isVisible: true });
+  };
+
+  const hideToast = () => {
+    setToast(prev => ({ ...prev, isVisible: false }));
+  };
 
   const fetchBenefits = async () => {
     try {
@@ -42,12 +58,27 @@ export default function RewardsPage() {
   const handleClaim = async (type: BenefitType) => {
     try {
       setClaiming(type);
+      
+      // Determinar valor para simulação de crédito (apenas frontend mock)
+      let claimAmount = 0;
+      if (benefits) {
+        if (type === 'DAILY_CASHBACK') claimAmount = benefits.daily.amount;
+        else if (type === 'RAKEBACK') claimAmount = benefits.rakeback.amount;
+        else if (type === 'WEEKLY_BONUS') claimAmount = benefits.weekly.amount;
+      }
+
       await benefitsService.claimBenefit(type);
-      alert('Benefício resgatado com sucesso!');
+      
+      // Dispara evento para atualizar o saldo no Header (simulação)
+      if (claimAmount > 0) {
+        window.dispatchEvent(new CustomEvent('wallet:update_balance', { detail: { amount: claimAmount } }));
+      }
+
+      showToast('Benefício resgatado com sucesso! O valor foi creditado na sua carteira.', 'success');
       await fetchBenefits(); // Atualiza status
     } catch (err: any) {
       const msg = err.response?.data?.message || 'Erro ao resgatar. Tente novamente.';
-      alert(msg);
+      showToast(msg, 'error');
     } finally {
       setClaiming(null);
     }
@@ -60,6 +91,12 @@ export default function RewardsPage() {
 
   return (
     <div className="min-h-screen bg-[#0B1622] pt-24 px-6 pb-20">
+      <Toast 
+        message={toast.message} 
+        type={toast.type} 
+        isVisible={toast.isVisible} 
+        onClose={hideToast} 
+      />
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex flex-col md:flex-row items-center justify-between mb-10 gap-6">
