@@ -193,7 +193,7 @@ export default function RewardsPage() {
                      benefits?.weekly.available ? 'Resgatar' : 
                      benefits?.weekly.claimed ? 'Já Resgatado' : 
                      benefits?.weekly.availableInDays ? `Disponível em ${benefits.weekly.availableInDays} dias` :
-                     benefits?.weekly.period ? `Disponível em ${benefits.weekly.period}` : 'Indisponível'}
+                     'Disponível na Segunda-feira'}
                 </button>
             </div>
 
