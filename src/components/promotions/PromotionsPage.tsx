@@ -130,8 +130,16 @@ export default function PromotionsPage() {
     return `${days}d`;
   };
 
+  const handleClaim = (promo: Promotion) => {
+    toast({
+      type: 'success',
+      message: `Promoção ${promo.title} ativada com sucesso!`,
+      duration: 3000,
+    });
+  };
+
   return (
-    <div className="w-full min-h-screen bg-[#0B1622] pt-24 pb-16 px-4 ml-16">
+    <div className="w-full min-h-full bg-[#0B1622] pt-24 pb-8 px-4">
       <div className="mb-12">
         <h1 className="text-4xl font-bold text-white mb-2">🎁 Promoções</h1>
         <p className="text-slate-400">Aproveite as melhores ofertas e bônus exclusivos</p>
@@ -149,18 +157,23 @@ export default function PromotionsPage() {
               </span>
               <h2 className="text-4xl font-bold mb-2">{featuredPromotions[0].title}</h2>
               <p className="text-lg mb-4 opacity-90">{featuredPromotions[0].description}</p>
-              <div className="flex items-center gap-6">
-                <div>
-                  <p className="text-sm opacity-75">Bônus</p>
-                  <p className="text-5xl font-bold">{featuredPromotions[0].bonus}</p>
-                </div>
-                {featuredPromotions[0].code && (
-                  <div className="bg-black bg-opacity-30 rounded-lg px-4 py-3">
-                    <p className="text-sm opacity-75">Código</p>
-                    <p className="text-2xl font-bold font-mono">{featuredPromotions[0].code}</p>
+              <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
+                <div className="flex items-center gap-6 w-full md:w-auto">
+                  <div>
+                    <p className="text-sm opacity-75">Bônus</p>
+                    <p className="text-5xl font-bold">{featuredPromotions[0].bonus}</p>
                   </div>
-                )}
-                <button className="ml-auto bg-black bg-opacity-40 hover:bg-opacity-60 text-white font-bold py-3 px-8 rounded-lg transition-all">
+                  {featuredPromotions[0].code && (
+                    <div className="bg-black bg-opacity-30 rounded-lg px-4 py-3">
+                      <p className="text-sm opacity-75">Código</p>
+                      <p className="text-2xl font-bold font-mono">{featuredPromotions[0].code}</p>
+                    </div>
+                  )}
+                </div>
+                <button 
+                  onClick={() => handleClaim(featuredPromotions[0])}
+                  className="w-full md:w-auto md:ml-auto bg-black bg-opacity-40 hover:bg-opacity-60 text-white font-bold py-3 px-8 rounded-lg transition-all"
+                >
                   Aproveitar Agora
                 </button>
               </div>
@@ -240,7 +253,10 @@ export default function PromotionsPage() {
                 </div>
               </div>
 
-              <button className="w-full bg-[#F5A623] hover:bg-[#D4881C] text-black font-bold py-2 rounded-lg transition-all">
+              <button 
+                onClick={() => handleClaim(promo)}
+                className="w-full bg-[#F5A623] hover:bg-[#D4881C] text-black font-bold py-2 rounded-lg transition-all mt-auto"
+              >
                 Aproveitar
               </button>
             </div>

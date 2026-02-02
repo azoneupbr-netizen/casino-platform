@@ -78,7 +78,7 @@ export default function RewardsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0B1622] pt-24 px-6 pb-20">
+    <div className="w-full min-h-full bg-[#0B1622] pt-24 px-6 pb-8">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex flex-col md:flex-row items-center justify-between mb-10 gap-6">
@@ -193,7 +193,7 @@ export default function RewardsPage() {
                      benefits?.weekly.available ? 'Resgatar' : 
                      benefits?.weekly.claimed ? 'Já Resgatado' : 
                      benefits?.weekly.availableInDays ? `Disponível em ${benefits.weekly.availableInDays} dias` :
-                     'Disponível na Segunda-feira'}
+                     'Sem bônus disponível'}
                 </button>
             </div>
 
@@ -222,7 +222,7 @@ export default function RewardsPage() {
                     }`}
                 >
                     {claiming === 'RAKEBACK' ? 'Processando...' : 
-                     benefits?.rakeback.available ? 'Resgatar' : 'Indisponível'}
+                     benefits?.rakeback.available ? 'Resgatar' : 'Sem saldo disponível'}
                 </button>
             </div>
         </div>

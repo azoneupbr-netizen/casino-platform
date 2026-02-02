@@ -9,9 +9,11 @@ import UserDropdown from './UserDropdown';
 import SupportModal from './SupportModal';
 import { api } from '../../services/api';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/contexts/ToastContext';
 
 export default function Header() {
   const { user, isAuthenticated, login, logout } = useAuth();
+  const { toast } = useToast();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
   const [isGuestProfileOpen, setIsGuestProfileOpen] = useState(false);
@@ -141,17 +143,21 @@ export default function Header() {
         const res = await api.post('/auth/login', { email, password });
         login(res.data.access_token);
         setIsModalOpen(false);
+        toast('Login realizado com sucesso!', 'success');
       } else {
         // Signup (Auto login)
         const res = await api.post('/auth/register', { email, password });
         login(res.data.access_token);
         setIsModalOpen(false);
+        toast('Cadastro realizado com sucesso!', 'success');
         // Abrir modal de depósito após cadastro (Primeiro Depósito)
         setTimeout(() => setIsDepositModalOpen(true), 500);
       }
     } catch (err: any) {
       console.error(err);
-      setError(err.response?.data?.message || 'Erro ao realizar autenticação');
+      const errorMessage = err.response?.data?.message || 'Erro ao realizar autenticação';
+      // setError(errorMessage); // Removed in favor of Toast
+      toast(errorMessage, 'error');
     } finally {
       setLoading(false);
     }

@@ -3,8 +3,8 @@ import Link from 'next/link';
 
 export default function Footer() {
   return (
-    <footer className="bg-primary border-t border-border-custom pt-16 pb-8 text-text-secondary transition-colors duration-300">
-      <div className="container mx-auto px-6">
+    <footer className="bg-primary border-t border-border-custom pt-10 pb-24 md:pb-10 text-text-secondary transition-colors duration-300 w-full overflow-hidden relative z-10">
+      <div className="w-full max-w-[100vw] px-4 md:px-6 mx-auto">
         
         {/* Provedores e Parceiros */}
         <div className="mb-12 border-b border-border-custom pb-12">
@@ -83,7 +83,7 @@ export default function Footer() {
             </div>
           </div>
           
-          <div className="flex gap-4 opacity-70">
+          <div className="flex flex-wrap gap-4 opacity-70 justify-center md:justify-end">
             {['PIX', 'Visa', 'Mastercard', 'Crypto'].map(pay => (
                 <span key={pay} className="text-xs font-bold bg-secondary px-3 py-1 rounded border border-border-custom">{pay}</span>
             ))}

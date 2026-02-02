@@ -78,7 +78,7 @@ export default function CasinoPage() {
   });
 
   return (
-    <div className="w-full px-4 pb-24 pt-4 md:pt-6"> {/* pb-24 garante espaço para nav mobile */}
+    <div className="w-full px-4 pb-8 pt-4 md:pt-6">
       <div className="max-w-7xl mx-auto">
         
         {/* Banner Rotativo */}

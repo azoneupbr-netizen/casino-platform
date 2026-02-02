@@ -39,11 +39,11 @@ export default function SupportModal({ isOpen, onClose }: SupportModalProps) {
   };
 
   return (
-    <div className="fixed bottom-0 right-0 md:bottom-4 md:right-4 z-[1000] w-full md:w-auto md:max-w-[380px] flex flex-col items-end pointer-events-none">
+    <div className="fixed inset-x-0 bottom-0 md:inset-auto md:bottom-4 md:right-4 z-[2000] flex flex-col items-end pointer-events-none">
       
-      <div className="bg-[#101D2C] border border-slate-800 rounded-t-2xl md:rounded-2xl w-full shadow-2xl overflow-hidden flex flex-col h-[70vh] md:h-[500px] animate-in slide-in-from-bottom-5 fade-in duration-300 pointer-events-auto">
+      <div className="pointer-events-auto w-full md:w-auto md:max-w-[380px] bg-[#101D2C] border-t border-x md:border border-slate-800 rounded-t-2xl md:rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[85dvh] md:h-[500px] animate-in slide-in-from-bottom-5 fade-in duration-300">
         {/* Header */}
-        <div className="bg-[#0B1622] p-4 border-b border-slate-800 flex justify-between items-center cursor-pointer" onClick={onClose}>
+        <div className="bg-[#0B1622] p-4 border-b border-slate-800 flex justify-between items-center cursor-pointer touch-none" onClick={onClose}>
             <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-[#ccff00] flex items-center justify-center text-black font-bold text-xl relative">
                     🎧
@@ -78,18 +78,18 @@ export default function SupportModal({ isOpen, onClose }: SupportModalProps) {
         </div>
 
         {/* Input Area */}
-        <form onSubmit={handleSendMessage} className="p-4 bg-[#0B1622] border-t border-slate-800 flex gap-2">
+        <form onSubmit={handleSendMessage} className="p-4 bg-[#0B1622] border-t border-slate-800 flex gap-2 pb-6 md:pb-4">
             <input 
                 type="text" 
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder="Digite sua mensagem..."
-                className="flex-1 bg-[#1a2942] border border-slate-700 rounded-lg px-4 py-2 text-white focus:border-[#ccff00] outline-none text-base md:text-sm"
+                className="flex-1 bg-[#1a2942] border border-slate-700 rounded-lg px-4 py-3 md:py-2 text-white focus:border-[#ccff00] outline-none text-base md:text-sm"
             />
             <button 
                 type="submit" 
                 disabled={!message.trim()}
-                className="bg-[#ccff00] text-black p-2 rounded-lg hover:bg-[#b3e600] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="bg-[#ccff00] text-black p-3 md:p-2 rounded-lg hover:bg-[#b3e600] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
                 ➤
             </button>

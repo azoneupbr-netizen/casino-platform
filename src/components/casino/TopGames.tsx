@@ -82,10 +82,10 @@ export default function TopGames() {
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {topGames.map((game, index) => (
-          <div key={game.id} className="relative min-w-[160px] md:min-w-[180px] pt-4 pl-4 snap-start">
+          <div key={game.id} className="relative min-w-[160px] md:min-w-[180px] pt-4 pl-6 snap-start">
             {/* Large Number Background */}
             <span 
-              className="absolute -left-2 top-0 text-[120px] font-black leading-none z-0 select-none pointer-events-none"
+              className="absolute -left-1 top-0 text-[120px] font-black leading-none z-0 select-none pointer-events-none"
               style={{
                 WebkitTextStroke: '2px #334155',
                 color: 'transparent',
