@@ -1,12 +1,19 @@
 import React, { useRef, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
+
+interface User {
+    id?: string;
+    email?: string;
+    name?: string;
+}
 
 interface UserDropdownProps {
     isOpen: boolean;
     onClose: () => void;
     onLogout: () => void;
     onSupportClick: () => void;
-    user: any;
+    user: User | null;
 }
 
 export default function UserDropdown({ isOpen, onClose, onLogout, onSupportClick, user }: UserDropdownProps) {
@@ -35,8 +42,8 @@ export default function UserDropdown({ isOpen, onClose, onLogout, onSupportClick
             {/* Header User Info */}
             <div className="bg-[#1e2330] p-4 text-white">
                 <div className="flex items-center gap-3 mb-3">
-                    <div className="w-12 h-12 rounded-full bg-yellow-400 overflow-hidden border-2 border-white/20">
-                         <img src={`https://api.dicebear.com/9.x/avataaars/svg?seed=${user?.email || 'User'}`} alt="Avatar" className="w-full h-full object-cover" />
+                    <div className="w-12 h-12 rounded-full bg-yellow-400 overflow-hidden border-2 border-white/20 relative">
+                         <Image src={`https://api.dicebear.com/9.x/avataaars/svg?seed=${user?.email || 'User'}`} alt="Avatar do usuário" fill className="object-cover" unoptimized />
                     </div>
                     <div>
                         <h3 className="font-bold text-lg leading-tight">{user?.name || user?.email?.split('@')[0] || 'Usuário'}</h3>

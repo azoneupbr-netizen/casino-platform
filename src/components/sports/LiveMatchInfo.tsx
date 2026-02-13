@@ -1,8 +1,9 @@
 'use client';
 import React from 'react';
+import { Match } from './SportsFeed';
 
 interface LiveMatchInfoProps {
-  match: any;
+  match: Match | null;
   onClose: () => void;
 }
 
@@ -39,7 +40,9 @@ export default function LiveMatchInfo({ match, onClose }: LiveMatchInfoProps) {
         {/* Placar Overlay */}
         <div className="absolute bottom-0 left-0 right-0 bg-black/80 p-2 flex justify-between items-center text-white text-xs">
             <span>{match.homeTeam}</span>
-            <span className="font-mono font-bold text-accent-gold">{match.score || '0 - 0'}</span>
+            <span className="font-mono font-bold text-accent-gold">
+              {match.score || '0 - 0'}
+            </span>
             <span>{match.awayTeam}</span>
         </div>
       </div>
@@ -65,6 +68,7 @@ export default function LiveMatchInfo({ match, onClose }: LiveMatchInfoProps) {
       {/* Mercados Expandidos (Scrollable) */}
       <div className="flex-1 overflow-y-auto p-3 space-y-3 scrollbar-thin scrollbar-thumb-border-custom">
         {/* Mercado: Vencedor */}
+        {match.odds && (
         <div>
             <h4 className="text-xs font-bold text-text-muted mb-2 uppercase">Resultado Final</h4>
             <div className="grid grid-cols-3 gap-1">
@@ -82,9 +86,10 @@ export default function LiveMatchInfo({ match, onClose }: LiveMatchInfoProps) {
                 </button>
             </div>
         </div>
+        )}
 
         {/* Mercado: Total de Gols */}
-        {match.odds.over25 && match.odds.under25 && (
+        {match.odds?.over25 && match.odds?.under25 && (
         <div>
             <h4 className="text-xs font-bold text-text-muted mb-2 uppercase">Total de Gols (2.5)</h4>
             <div className="grid grid-cols-2 gap-1">
@@ -101,7 +106,7 @@ export default function LiveMatchInfo({ match, onClose }: LiveMatchInfoProps) {
         )}
         
         {/* Mercado: Ambas Marcam */}
-        {match.odds.bothScoreYes && match.odds.bothScoreNo && (
+        {match.odds?.bothScoreYes && match.odds?.bothScoreNo && (
         <div>
              <h4 className="text-xs font-bold text-text-muted mb-2 uppercase">Ambos Marcam</h4>
              <div className="grid grid-cols-2 gap-1">

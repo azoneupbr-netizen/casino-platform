@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
+import Image from 'next/image';
 import HeroBanner from './HeroBanner';
 import { api } from '../../services/api';
 
@@ -158,11 +159,12 @@ export default function CasinoPage() {
               >
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 z-10" />
                 
-                <img 
-                  src={game.image || `https://via.placeholder.com/300x400?text=${game.name}`} 
+                <Image 
+                  src={game.image || '/placeholder-game.png'} 
                   alt={game.name}
-                  loading="lazy"
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-110"
+                  unoptimized
                 />
 
                 <div className="absolute top-2 left-2 z-20 flex flex-col gap-1">

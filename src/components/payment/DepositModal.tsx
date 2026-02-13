@@ -1,5 +1,6 @@
 'use client';
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { api } from '../../services/api';
 import { useToast } from '../../contexts/ToastContext';
 
@@ -95,8 +96,9 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
                 <div className="flex flex-col items-center animate-fade-in">
                     <h2 className="text-white font-bold text-xl mb-6">Pagamento via Pix</h2>
                     <div className="bg-white p-4 rounded-xl mb-6 shadow-lg">
-                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                         <img src={pixData.qrCodeUrl} alt="QR Code Pix" className="w-56 h-56" />
+                         <div className="w-56 h-56 relative">
+                           <Image src={pixData.qrCodeUrl} alt="QR Code PIX para pagamento" fill className="object-contain" unoptimized />
+                         </div>
                     </div>
                     <div className="w-full mb-6">
                         <label className="text-gray-400 text-xs font-bold mb-2 block uppercase">Código Pix Copia e Cola</label>
