@@ -1,5 +1,6 @@
 'use client';
 import React, { useState } from 'react';
+import { useToast } from '@/contexts/ToastContext';
 
 interface Promotion {
   id: number;
@@ -17,6 +18,7 @@ interface Promotion {
 }
 
 export default function PromotionsPage() {
+  const { showToast } = useToast();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [promotions] = useState<Promotion[]>([
     {
@@ -131,11 +133,7 @@ export default function PromotionsPage() {
   };
 
   const handleClaim = (promo: Promotion) => {
-    toast({
-      type: 'success',
-      message: `Promoção ${promo.title} ativada com sucesso!`,
-      duration: 3000,
-    });
+    showToast(`Promoção ${promo.title} ativada com sucesso!`, 'success');
   };
 
   return (
