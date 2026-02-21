@@ -177,10 +177,10 @@ export default function BetSlip({ bets, onRemoveBet, onClearBets, className = ''
       {/* Abas */}
       <div className="bg-tertiary p-1 border-b border-border-custom">
         <div className="flex bg-black/20 rounded-lg p-1">
-            {['simples', 'multipla', 'sistema'].map((tab) => (
+            {(['simples', 'multipla', 'sistema'] as const).map((tab) => (
                 <button
                     key={tab}
-                    onClick={() => setActiveTab(tab as any)}
+                    onClick={() => setActiveTab(tab)}
                     className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-all capitalize ${
                         activeTab === tab 
                         ? 'bg-secondary text-accent-gold shadow-sm border border-border-custom' 

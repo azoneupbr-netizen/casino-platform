@@ -1,5 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { api } from '../../services/api';
 import { useToast } from '../../contexts/ToastContext';
 
@@ -167,7 +168,7 @@ export default function WalletPage() {
                                 <div className="bg-white p-4 rounded-xl inline-block shadow-xl">
                                     <div className="w-48 h-48 bg-black pattern-dots relative overflow-hidden">
                                         {pixData?.qrCodeUrl ? (
-                                            <img src={pixData.qrCodeUrl} alt="QR Code PIX" className="w-full h-full object-contain" />
+                                            <Image src={pixData.qrCodeUrl} alt="QR Code PIX para pagamento" fill className="object-contain" unoptimized />
                                         ) : (
                                             <div className="absolute inset-0 flex items-center justify-center">
                                                 <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center text-xs font-bold text-black">PIX</div>

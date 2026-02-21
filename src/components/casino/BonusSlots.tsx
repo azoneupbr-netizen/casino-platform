@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { api } from '../../services/api';
 
 interface Game {
@@ -64,7 +65,7 @@ export default function BonusSlots() {
               {/* Image Placeholder */}
               <div className="absolute inset-0 flex items-center justify-center text-4xl bg-[#13151b] group-hover:scale-110 transition-transform duration-500">
                 {game.image && game.image.startsWith('http') ? (
-                  <img src={game.image} alt={game.name} className="w-full h-full object-cover" />
+                  <Image src={game.image} alt={game.name} fill className="object-cover" unoptimized />
                 ) : (
                   game.image || '🎰'
                 )}

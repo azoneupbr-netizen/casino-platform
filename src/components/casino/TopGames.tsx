@@ -1,5 +1,6 @@
 'use client';
 import React, { useRef, useState, useEffect } from 'react';
+import Image from 'next/image';
 import { api } from '../../services/api';
 
 interface Game {
@@ -99,7 +100,7 @@ export default function TopGames() {
             <div className="relative z-10 bg-secondary rounded-xl overflow-hidden border border-border-custom hover:border-accent-gold transition-all cursor-pointer hover:scale-105 hover:shadow-xl group w-full aspect-[3/4]">
                {/* Image Placeholder */}
                <div className="absolute inset-0 bg-tertiary flex items-center justify-center text-6xl group-hover:scale-110 transition-transform duration-500">
-                  {game.image && game.image.startsWith('http') ? <img src={game.image} alt={game.name} className="w-full h-full object-cover" /> : game.image}
+                  {game.image && game.image.startsWith('http') ? <Image src={game.image} alt={game.name} fill className="object-cover" unoptimized /> : game.image}
                </div>
                
                {/* Overlay */}

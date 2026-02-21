@@ -50,9 +50,9 @@ export default function AccountPage() {
       setLoading(true);
       await authService.updateProfile({ name, phone });
       showToast('Perfil atualizado com sucesso!', 'success');
-    } catch (error: any) {
-      console.error('Erro ao atualizar perfil:', error);
-      const errorMessage = error.response?.data?.message || error.response?.data?.error || error.message || 'Erro desconhecido';
+    } catch (err: unknown) {
+      const axiosError = err as { response?: { data?: { message?: string; error?: string } }; message?: string };
+      const errorMessage = axiosError.response?.data?.message || axiosError.response?.data?.error || axiosError.message || 'Erro desconhecido';
       showToast(`Erro ao atualizar perfil: ${errorMessage}`, 'error');
     } finally {
       setLoading(false);
@@ -72,9 +72,9 @@ export default function AccountPage() {
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
-    } catch (error: any) {
-      console.error('Erro ao alterar senha:', error);
-      const errorMessage = error.response?.data?.message || error.response?.data?.error || error.message || 'Erro desconhecido';
+    } catch (err: unknown) {
+      const axiosError = err as { response?: { data?: { message?: string; error?: string } }; message?: string };
+      const errorMessage = axiosError.response?.data?.message || axiosError.response?.data?.error || axiosError.message || 'Erro desconhecido';
       showToast(`Erro ao alterar senha: ${errorMessage}`, 'error');
     } finally {
       setLoading(false);
