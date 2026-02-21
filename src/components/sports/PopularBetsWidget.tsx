@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { api } from '../../services/api';
 
 interface Match {
@@ -14,8 +15,23 @@ interface Match {
   awayIcon: string;
 }
 
+interface Team {
+  name: string;
+  logo: string;
+}
+
+interface PopularMatch {
+  id: number;
+  home: Team;
+  away: Team;
+  selection: string;
+  market: string;
+  odd: number;
+  highlight: boolean;
+}
+
 const PopularBetsWidget = () => {
-  const [matches, setMatches] = useState<any[]>([]);
+  const [matches, setMatches] = useState<PopularMatch[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -100,12 +116,16 @@ const PopularBetsWidget = () => {
             {/* Teams Row */}
             <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
-                    <img src={match.home.logo} alt={match.home.name} className="w-5 h-5 object-contain" />
+                    <div className="w-5 h-5 relative">
+                      <Image src={match.home.logo} alt={`Logo ${match.home.name}`} fill className="object-contain" unoptimized />
+                    </div>
                     <span className="text-sm font-medium text-white">{match.home.name}</span>
                 </div>
                 <span className={`text-xs mx-1 ${match.highlight ? 'text-white/80' : 'text-slate-500'}`}>x</span>
                 <div className="flex items-center gap-2">
-                    <img src={match.away.logo} alt={match.away.name} className="w-5 h-5 object-contain" />
+                    <div className="w-5 h-5 relative">
+                      <Image src={match.away.logo} alt={`Logo ${match.away.name}`} fill className="object-contain" unoptimized />
+                    </div>
                     <span className="text-sm font-medium text-white">{match.away.name}</span>
                 </div>
             </div>

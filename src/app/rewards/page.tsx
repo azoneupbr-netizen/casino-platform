@@ -26,10 +26,10 @@ export default function RewardsPage() {
       setError(null);
       const data = await benefitsService.getBenefitsStatus();
       setBenefits(data);
-    } catch (err: any) {
-      console.error('Erro ao carregar benefícios:', err);
+    } catch (err: unknown) {
       // Se for 404, mensagem específica
-      if (err.response?.status === 404) {
+      const axiosError = err as { response?: { status?: number } };
+      if (axiosError.response?.status === 404) {
         setError('API de benefícios não encontrada (404). Verifique se o backend está atualizado.');
       } else {
         setError('Não foi possível carregar os status dos benefícios.');
@@ -64,8 +64,9 @@ export default function RewardsPage() {
 
       showToast('Benefício resgatado com sucesso! O valor foi creditado na sua carteira.', 'success');
       await fetchBenefits(); // Atualiza status
-    } catch (err: any) {
-      const msg = err.response?.data?.message || 'Erro ao resgatar. Tente novamente.';
+    } catch (err: unknown) {
+      const axiosError = err as { response?: { data?: { message?: string } } };
+      const msg = axiosError.response?.data?.message || 'Erro ao resgatar. Tente novamente.';
       showToast(msg, 'error');
     } finally {
       setClaiming(null);

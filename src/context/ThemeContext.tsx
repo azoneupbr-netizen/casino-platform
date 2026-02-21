@@ -11,23 +11,30 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('dark'); // Default to dark
-
-  useEffect(() => {
-    // Check localStorage or system preference on mount
+/** Gets the initial theme from localStorage (client-side only) */
+function getInitialTheme(): Theme {
+  if (typeof window !== 'undefined') {
     const savedTheme = localStorage.getItem('theme') as Theme | null;
-    if (savedTheme) {
-      setTheme(savedTheme);
-      document.documentElement.classList.remove('dark', 'light');
-      document.documentElement.classList.add(savedTheme);
-      document.documentElement.setAttribute('data-theme', savedTheme);
-    } else {
-      // Default is dark
-      setTheme('dark');
-      document.documentElement.classList.add('dark');
-      document.documentElement.setAttribute('data-theme', 'dark');
+    if (savedTheme === 'dark' || savedTheme === 'light') {
+      return savedTheme;
     }
+  }
+  return 'dark';
+}
+
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  const [theme, setTheme] = useState<Theme>('dark');
+  const [mounted, setMounted] = useState(false);
+
+  // Initialize theme on mount (client-side) - this is a valid hydration pattern
+  useEffect(() => {
+    const initialTheme = getInitialTheme();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setTheme(initialTheme);
+    document.documentElement.classList.remove('dark', 'light');
+    document.documentElement.classList.add(initialTheme);
+    document.documentElement.setAttribute('data-theme', initialTheme);
+    setMounted(true);
   }, []);
 
   const toggleTheme = () => {

@@ -1,6 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import DepositModal from '../payment/DepositModal';
 import ThemeToggle from '../ui/ThemeToggle';
 import PromotionsSidebar from './PromotionsSidebar';
@@ -13,7 +14,7 @@ import { useToast } from '@/contexts/ToastContext';
 
 export default function Header() {
   const { user, isAuthenticated, login, logout } = useAuth();
-  const { toast } = useToast();
+  const { showToast } = useToast();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
   const [isGuestProfileOpen, setIsGuestProfileOpen] = useState(false);
@@ -143,21 +144,21 @@ export default function Header() {
         const res = await api.post('/auth/login', { email, password });
         login(res.data.access_token);
         setIsModalOpen(false);
-        toast('Login realizado com sucesso!', 'success');
+        showToast('Login realizado com sucesso!', 'success');
       } else {
         // Signup (Auto login)
         const res = await api.post('/auth/register', { email, password });
         login(res.data.access_token);
         setIsModalOpen(false);
-        toast('Cadastro realizado com sucesso!', 'success');
+        showToast('Cadastro realizado com sucesso!', 'success');
         // Abrir modal de depósito após cadastro (Primeiro Depósito)
         setTimeout(() => setIsDepositModalOpen(true), 500);
       }
-    } catch (err: any) {
-      console.error(err);
-      const errorMessage = err.response?.data?.message || 'Erro ao realizar autenticação';
+    } catch (err: unknown) {
+      const axiosError = err as { response?: { data?: { message?: string } } };
+      const errorMessage = axiosError.response?.data?.message || 'Erro ao realizar autenticação';
       // setError(errorMessage); // Removed in favor of Toast
-      toast(errorMessage, 'error');
+      showToast(errorMessage, 'error');
     } finally {
       setLoading(false);
     }
@@ -170,34 +171,39 @@ export default function Header() {
 
   return (
     <>
-      <header className="sticky top-0 left-0 right-0 bg-primary border-b border-border-custom z-50 h-20 transition-colors duration-300">
+      {/* Skip Link para acessibilidade */}
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:bg-accent-primary focus:text-black focus:px-4 focus:py-2 focus:rounded-lg focus:font-bold">
+        Pular para conteúdo principal
+      </a>
+      
+      <header role="banner" className="sticky top-0 left-0 right-0 bg-primary border-b border-border-custom z-50 h-20 transition-colors duration-300">
         <div className="flex items-center justify-between h-full px-6">
-          <div className="flex items-center gap-2 w-auto md:w-64"> {/* Largura ajustada */}
+          <Link href="/" className="flex items-center gap-2 w-auto md:w-64" aria-label="Brand Casino - Página inicial">
             <span className="text-xl md:text-2xl font-bold text-accent-primary">BRAND</span>
             <span className="text-sm md:text-base text-text-primary">CASINO</span>
-          </div>
+          </Link>
 
-          <nav className="hidden md:flex items-center gap-8">
-            <Link href="/" className="text-text-secondary hover:text-accent-primary transition-colors font-medium">
+          <nav role="navigation" aria-label="Menu principal" className="hidden md:flex items-center gap-8">
+            <Link href="/" className="text-text-secondary hover:text-accent-primary transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-accent-primary focus:ring-offset-2 focus:ring-offset-primary rounded">
               CASSINO
             </Link>
-            <Link href="/sports" className="text-text-secondary hover:text-accent-primary transition-colors font-medium">
+            <Link href="/sports" className="text-text-secondary hover:text-accent-primary transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-accent-primary focus:ring-offset-2 focus:ring-offset-primary rounded">
               ESPORTES
             </Link>
-            <Link href="#" className="text-text-secondary hover:text-accent-primary transition-colors font-medium">
+            <Link href="#" className="text-text-secondary hover:text-accent-primary transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-accent-primary focus:ring-offset-2 focus:ring-offset-primary rounded">
               AO VIVO
             </Link>
             <button 
                 onClick={() => setIsPromotionsOpen(true)}
-                className="text-text-secondary hover:text-accent-primary transition-colors font-medium flex items-center gap-2 group" 
-                title="Promoções"
+                className="text-text-secondary hover:text-accent-primary transition-colors font-medium flex items-center gap-2 group focus:outline-none focus:ring-2 focus:ring-accent-primary focus:ring-offset-2 focus:ring-offset-primary rounded" 
+                aria-label="Abrir promoções"
             >
-              <span className="text-2xl group-hover:scale-110 transition-transform animate-bounce">🎁</span>
+              <span className="text-2xl group-hover:scale-110 transition-transform animate-bounce" aria-hidden="true">🎁</span>
             </button>
             <button 
                 onClick={() => setIsSupportOpen(true)}
-                className="text-text-secondary hover:text-accent-primary transition-colors font-medium flex items-center gap-2 group" 
-                title="Suporte"
+                className="text-text-secondary hover:text-accent-primary transition-colors font-medium flex items-center gap-2 group focus:outline-none focus:ring-2 focus:ring-accent-primary focus:ring-offset-2 focus:ring-offset-primary rounded" 
+                aria-label="Abrir suporte ao cliente"
             >
               <svg width="28" height="28" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="group-hover:scale-110 transition-transform animate-[bounce_2s_infinite]">
                 <defs>
@@ -264,17 +270,17 @@ export default function Header() {
                     <span className="text-white font-bold text-sm mx-2">
                       {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(balance)}
                     </span>
-                    <div className="w-8 h-8 rounded-full bg-[#2a2e3e] flex items-center justify-center border border-gray-600">
-                         <img src={`https://api.dicebear.com/9.x/avataaars/svg?seed=${user?.email || 'User'}`} alt="Avatar" className="w-full h-full object-cover rounded-full" />
+                    <div className="w-8 h-8 rounded-full bg-[#2a2e3e] flex items-center justify-center border border-gray-600 relative overflow-hidden">
+                         <Image src={`https://api.dicebear.com/9.x/avataaars/svg?seed=${user?.email || 'User'}`} alt="Avatar do usuário" fill className="object-cover rounded-full" unoptimized />
                     </div>
                 </div>
 
                 <div className="relative">
                     <button 
                         onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
-                        className="w-10 h-10 rounded-full bg-yellow-400 border-2 border-[#1e2330] overflow-hidden hover:scale-105 transition-transform ring-2 ring-transparent hover:ring-yellow-400 cursor-pointer"
+                        className="w-10 h-10 rounded-full bg-yellow-400 border-2 border-[#1e2330] overflow-hidden hover:scale-105 transition-transform ring-2 ring-transparent hover:ring-yellow-400 cursor-pointer relative"
                     >
-                        <img src={`https://api.dicebear.com/9.x/avataaars/svg?seed=${user?.email || 'User'}`} alt="Avatar" className="w-full h-full object-cover" />
+                        <Image src={`https://api.dicebear.com/9.x/avataaars/svg?seed=${user?.email || 'User'}`} alt="Avatar do usuário" fill className="object-cover" unoptimized />
                     </button>
                     
                     <UserDropdown 
